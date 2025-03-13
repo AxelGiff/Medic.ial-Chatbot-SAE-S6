@@ -19,11 +19,7 @@ const ChatInterface = () => {
     try {
       setIsLoading(true);
       
-      // Préparer l'historique de conversation si nécessaire
-      const conversationHistory = messages.map(msg => ({
-        text: msg.text,
-        sender: msg.sender
-      }));
+    
       
       // Envoi de la requête à l'API Gradio
       const response = await axios.post('https://dd704091d27b57de3c.gradio.live/gradio_api/run/predict', {
