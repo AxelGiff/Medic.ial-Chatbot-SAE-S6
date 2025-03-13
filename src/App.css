@@ -1,0 +1,116 @@
+/* Réinitialisation de base */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #343541; /* fond sombre */
+  color: #e1e1e1;
+}
+
+/* Chat container prenant toute la fenêtre */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background-color: #343541;
+}
+
+/* En-tête du chat */
+.chat-header {
+  background-color: #444654;
+  padding: 20px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #525467;
+}
+
+/* Zone des messages */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #343541;
+}
+
+/* Message générique */
+.message {
+  max-width: 70%;
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  word-break: break-word;
+  animation: fade-in 0.3s ease-in-out;
+}
+
+/* Message utilisateur */
+.message.user {
+  align-self: flex-end;
+  background-color: #0b93f6;
+  color: #fff;
+  border-bottom-right-radius: 5px;
+}
+
+/* Message bot */
+.message.bot {
+  align-self: flex-start;
+  background-color: #444654;
+  color: #e1e1e1;
+  border-bottom-left-radius: 5px;
+}
+
+/* Formulaire d'entrée */
+.input-form {
+  display: flex;
+  padding: 15px;
+  background-color: #40414f;
+  border-top: 1px solid #525467;
+}
+
+.input-form input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #525467;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+  background-color: #343541;
+  color: #fff;
+}
+
+.input-form input:focus {
+  border-color: #0b93f6;
+}
+
+.input-form button {
+  margin-left: 10px;
+  padding: 0 20px;
+  background-color: #0b93f6;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.input-form button:hover {
+  background-color: #0a83d0;
+}
+
+.input-form button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+/* Animation pour l'apparition des messages */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
