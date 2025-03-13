@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import '../App.css';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
@@ -14,15 +15,22 @@ const ChatInterface = () => {
     return /[#*_>`-]/.test(text);
   };
 
+  // Fonction pour faire défiler automatiquement vers le dernier message
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   // Fonction pour envoyer un message au backend
   const sendMessage = async (message) => {
     try {
       setIsLoading(true);
       
-    
-      
       // Envoi de la requête à l'API Gradio
-      const response = await axios.post('https://dd704091d27b57de3c.gradio.live/gradio_api/run/predict', {
+      const response = await axios.post('https://15af0837fca124cf6d.gradio.live/gradio_api/run/predict', {
         data: [message, null],
         fn_index: 0
       });
@@ -60,15 +68,10 @@ const ChatInterface = () => {
     setInputMessage('');
   };
 
-  // Faire défiler automatiquement vers le bas quand de nouveaux messages arrivent
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <h2>Mon Chatbot IA Médicale</h2>
+        <h2>Medic.ial</h2>
       </div>
       
       <div className="messages-container">
@@ -99,18 +102,20 @@ const ChatInterface = () => {
         <div ref={messagesEndRef} />
       </div>
       
-      <form onSubmit={handleSubmit} className="input-form">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          placeholder="Tapez votre message ici..."
-          disabled={isLoading}
-        />
-        <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
-          Envoyer
-        </button>
-      </form>
+      <div className="input-container">
+        <form onSubmit={handleSubmit} className="input-form">
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Tapez votre message ici..."
+            disabled={isLoading}
+          />
+          <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
+            Envoyer
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
