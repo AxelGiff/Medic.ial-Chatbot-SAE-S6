@@ -133,7 +133,7 @@ const AddUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/.netlify/functions/add_user', {
+      const response = await fetch('/netlify/functions/add_user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/.netlify/functions/get_users');
+        const response = await fetch('/netlify/functions/get_users');
         const data = await response.json();
         setUsers(data);
       } catch (error) {
