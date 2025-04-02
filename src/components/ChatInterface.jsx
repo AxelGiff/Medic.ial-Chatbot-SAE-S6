@@ -56,7 +56,7 @@ const ChatInterface = () => {
       {messages.length === 0 ? (
         <div className="no-messages-view">
           <div className="welcome-message">
-            <p>Bonjour ! Comment puis-je vous aider aujourd'hui ?</p>
+            <p>Bonjour ! Comment puis-je vous aider aujourd'hui ? 🧑‍⚕️</p>
           </div>
           <div className="input-container centered">
             <form onSubmit={handleSubmit} className="input-form">
@@ -64,11 +64,12 @@ const ChatInterface = () => {
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Tapez votre message ici..."
+                placeholder="Posez une question..."
                 disabled={isLoading}
               />
-              <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
-                Envoyer
+              <button type="submit" style={{background:"none"}} disabled={isLoading || inputMessage.trim() === ''}>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/></svg>
+
               </button>
             </form>
           </div>
@@ -109,10 +110,14 @@ const ChatInterface = () => {
                 disabled={isLoading}
               />
               <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
-                Envoyer
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/></svg>
+
               </button>
             </form>
+            <figcaption className="disclaimer-text">Medic.ial est sujet à faire des erreurs. Vérifiez les informations fournies.</figcaption>
+
           </div>
+          
         </>
       )}
 
