@@ -3,14 +3,14 @@
   display: flex;              
   min-height: 100vh;           
   margin: 0;
-  background-image: url('../public/color4bg.png'); /* Mets le bon chemin */
+  background-image: url('../public/blurBackground.png'); /* Mets le bon chemin */
   background-size: cover; /* Ajuste l'image à l'écran */
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed; /* Fixe le fond */
 }
 .body{
-  background-image: url('../public/color4bg.png'); 
+  background-image: url('../public/blurBackground.png'); /* Mets le bon chemin */
   background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
