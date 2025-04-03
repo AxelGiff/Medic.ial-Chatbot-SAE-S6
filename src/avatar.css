@@ -1,0 +1,23 @@
+.avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .avatar-image-wrapper {
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+
+  
+  .circular--portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
