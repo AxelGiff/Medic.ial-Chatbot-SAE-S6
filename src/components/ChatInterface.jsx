@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import Avatar from './Avatar.jsx';
 import '../App.css';
 
-const ChatInterface = () => {
-  const [messages, setMessages] = useState([]);
+const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = () => {} }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -22,6 +22,9 @@ const ChatInterface = () => {
   const sendMessage = async (message) => {
     try {
       setIsLoading(true);
+      
+      onMessageSent(message);
+      
       const response = await axios.post('https://15af0837fca124cf6d.gradio.live/gradio_api/run/predict', {
         data: [message, null],
         fn_index: 0
@@ -51,6 +54,7 @@ const ChatInterface = () => {
     setInputMessage('');
   };
 
+  // Le reste du composant reste inchangé
   return (
     <div className="chat-container">
       {messages.length === 0 ? (
@@ -68,8 +72,9 @@ const ChatInterface = () => {
                 disabled={isLoading}
               />
               <button type="submit" style={{background:"none"}} disabled={isLoading || inputMessage.trim() === ''}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/></svg>
-
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                  <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/>
+                </svg>
               </button>
             </form>
           </div>
@@ -77,7 +82,8 @@ const ChatInterface = () => {
       ) : (
         <>
           <div className="chat-header">
-            <h2>Medic.ial</h2>
+            <Avatar />
+            <h2 className="chat-title">Medic.ial</h2>
           </div>
           <div className="messages-container">
             {messages.map((msg, index) => (
@@ -110,80 +116,19 @@ const ChatInterface = () => {
                 disabled={isLoading}
               />
               <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/></svg>
-
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                  <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/>
+                </svg>
               </button>
             </form>
             <figcaption className="disclaimer-text">Medic.ial est sujet à faire des erreurs. Vérifiez les informations fournies.</figcaption>
-
           </div>
-          
         </>
       )}
-
-      {/* Les composants AddUser et UserList */}
-      <AddUser />
-      <UserList />
     </div>
   );
 };
-
-const AddUser = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('/.netlify/functions/add_user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
-      } else {
-        setMessage(data.error);
-      }
-    } catch (error) {
-      setMessage(`An error occurred: ${error.message}`);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Add User</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Add User</button>
-      </form>
-      {message && <p>{message}</p>}
-    </div>
-  );
-};
-
-const UserList = () => {
+/*const UserList = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -210,6 +155,6 @@ const UserList = () => {
       </ul>
     </div>
   );
-};
+};*/
 
 export default ChatInterface;
