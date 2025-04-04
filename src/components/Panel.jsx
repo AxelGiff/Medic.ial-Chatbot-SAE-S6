@@ -67,14 +67,18 @@ const Panel = ({
             className={`conversation-item ${activeConversationId === chat.id ? 'active' : ''}`}
             onClick={() => setActiveConversationId(chat.id)}
           >
-            <div className="conversation-icon">
-              <span className="material-icons">{chat.time}</span>
-            </div>
+           
             {!isCollapsed && (
+              <>
+               <div className="conversation-icon">
+               <span className="material-icons">{chat.time}</span>
+             </div>
               <div className="conversation-details">
+                
                 <div className="conversation-title">{chat.title}</div>
                 <div className="conversation-date">{chat.date}</div>
               </div>
+              </>
             )}
           </div>
         ))}
