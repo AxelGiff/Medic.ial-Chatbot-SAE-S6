@@ -14,7 +14,7 @@
   background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* Fixe le fond */
+  background-attachment: fixed; 
 }
 
 /* ----- Panel latéral (sidebar) ----- */
@@ -95,20 +95,17 @@
 }
 /* ----- Conteneur du chat (zone de messages + input) ----- */
 .chat-container {
-  flex: 1;                     
   display: flex;
   flex-direction: column;
-  overflow: hidden;           
-  margin-bottom: 120px; 
-
+  height: 100vh;
 }
 /* ----- Vue sans message : contenu centré ----- */
 .no-messages-view {
+  flex: 1; 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 0px); 
+  justify-content: center; 
+  align-items: center;     
   padding: 20px;
   text-align: center;
 }
@@ -119,8 +116,22 @@
 }
 
 .no-messages-view .input-container {
-  position: static;
-  margin-bottom: 0;
+  position: relative;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin-top: 20px;
+  width: 100%;
+}
+
+
+.welcome-content {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  width: 100%;
+  margin-bottom: 100px;
 }
 
 .no-messages-view .input-form {
@@ -130,41 +141,71 @@
 
 /* ----- Zone des messages scrollable ----- */
 .messages-container {
-  flex: 1;                    
-  overflow-y: auto;            
-  padding: 10px 15px;
+  flex: 1; 
+  overflow-y: auto; 
+  padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center; 
+  justify-content: flex-start; 
+  gap: 12px;
+  margin-left: 10vw; 
+  margin-right: 10vw;
+  margin-bottom: 8vw; 
+}
+.messages-container::-webkit-scrollbar {
+
+  display:none;
+
 }
 
+@media (max-width: 768px) {
+  .messages-container {
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-bottom: 100px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .messages-container {
+    margin-left: 2vw;
+    margin-right: 2vw;
+    margin-bottom: 120px; 
+  }
+}
 /* ----- Style des messages ----- */
 .message {
-  max-width: 70%;
-  padding: 10px 12px;
+  max-width: 70%; 
+  padding: 12px 16px;
   border-radius: 8px;
   word-break: break-word;
   animation: fade-in 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .message.user {
-  align-self: flex-end;
+  align-self: flex-end; /* Aligne à droite */
   background: rgba(67, 72, 105, 0.3);
-  backdrop-filter: blur(10px); 
-  border-radius: 12px; 
-  padding: 16px;
-  color: #ffffff; 
-  font-size: 1rem; 
-  line-height: 1.5; 
-  box-shadow: 0 4px 10px rgba(30, 33, 54, 0.3); 
-
-  word-wrap: break-word; 
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.5;
   border-bottom-right-radius: 4px;
 }
 
-.message.bot {
+.message.bot .message-content{
+  display:flex;
+  align-self: flex-end;
+}
+.message.user .message-content{
+  display:flex;
   align-self: flex-start;
+}
+.message.bot {
+  align-self: flex-start; 
   color: #e1e1e1;
+  font-size: 1rem;
+  line-height: 1.5;
   border-bottom-left-radius: 4px;
 }
 
@@ -231,6 +272,37 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.input-form textarea {
+  flex: 1; 
+  padding: 10px 12px;
+  border: none;
+  border-radius: 16px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  resize: none; 
+  overflow-y: auto; 
+  height: auto; 
+  max-height: 150px; 
+
+}
+.input-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+  textarea::-webkit-scrollbar {
+    width: 12px; 
+}
+
+/* For Firefox */
+textarea {
+    scrollbar-width: thin; 
+    scrollbar-color: #acacac transparent; 
+}
+
+textarea:hover {
+    scrollbar-color: #b1b1b1 transparent; 
+}
 
 /* Placeholder */
 .input-form input::placeholder {
@@ -294,6 +366,7 @@ h2{
 
 .conversation-item {
   padding: 8px;
+  gap: 12px;
   border-bottom: 1px solid #525467;
   cursor: pointer;
   display: flex;
@@ -318,6 +391,7 @@ h2{
   display:flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.3rem;
   padding-top:0.5rem;
     padding-inline-start: calc(0.5rem);
     padding-inline-end: calc(0.5rem);  ;}
