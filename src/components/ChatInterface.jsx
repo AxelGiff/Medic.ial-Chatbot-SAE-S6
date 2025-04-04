@@ -8,6 +8,8 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null); 
+
 
   const isMarkdown = (text) => /[#*_>`-]/.test(text);
 
@@ -42,7 +44,7 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
       setMessages(prev => [
         ...prev,
         { sender: 'user', text: message },
-        { sender: 'bot', text: "Désolé, une erreur s'est produite. Veuillez réessayer." }
+        { sender: 'bot', text: "Désolé, une erreur s'est produite. Veuillez réessayer. 👍" }
       ]);
     }
   };
@@ -51,34 +53,58 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
     e.preventDefault();
     if (inputMessage.trim() === '') return;
     sendMessage(inputMessage);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
     setInputMessage('');
+    
   };
 
   // Le reste du composant reste inchangé
   return (
     <div className="chat-container">
       {messages.length === 0 ? (
-        <div className="no-messages-view">
-          <div className="welcome-message">
-            <p>Bonjour ! Comment puis-je vous aider aujourd'hui ? 🧑‍⚕️</p>
-          </div>
-          <div className="input-container centered">
-            <form onSubmit={handleSubmit} className="input-form">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Posez une question..."
-                disabled={isLoading}
-              />
-              <button type="submit" style={{background:"none"}} disabled={isLoading || inputMessage.trim() === ''}>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                  <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/>
-                </svg>
-              </button>
-            </form>
-          </div>
-        </div>
+       <>
+       <div className="chat-header">
+         <h2 className="chat-title">Medic.ial</h2>
+         <Avatar />
+       </div>
+       <div className="no-messages-view">
+         <div className="welcome-content">
+           <div className="welcome-message">
+             <p>Bonjour ! Comment puis-je vous aider aujourd'hui ? 🧑‍⚕️</p>
+           </div>
+           <div className="input-container centered">
+             <form onSubmit={handleSubmit} className="input-form">
+             <textarea
+      value={inputMessage}
+      onChange={(e) => setInputMessage(e.target.value)}
+      placeholder="Posez une question..."
+      disabled={isLoading}
+      rows="1" 
+      className="input-textarea"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault(); 
+          handleSubmit(e); 
+        }
+      }}
+      onInput={(e) => {
+        e.target.style.height = "auto"; // Réinitialise la hauteur
+        e.target.style.height = `${e.target.scrollHeight}px`; // Ajuste à la hauteur du contenu
+      }}
+    />
+               <button type="submit" style={{background:"none"}} disabled={isLoading || inputMessage.trim() === ''}>
+                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                   <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/>
+                 </svg>
+               </button>
+             </form>
+           </div>
+         </div>
+       </div>
+     </>
+         
       ) : (
         <>
           <div className="chat-header">
@@ -86,35 +112,48 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
             <h2 className="chat-title">Medic.ial</h2>
           </div>
           <div className="messages-container">
-            {messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
-                <div className="message-content">
-                  {isMarkdown(msg.text) ? (
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  ) : (
-                    msg.text
-                  )}
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="message bot">
-                <div className="message-content loading">
-                  <span>.</span><span>.</span><span>.</span>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+  {messages.map((msg, index) => (
+    <div key={index} className={`message ${msg.sender}`}>
+      <div className="message-content">
+        {isMarkdown(msg.text) ? (
+          <ReactMarkdown>{msg.text}</ReactMarkdown>
+        ) : (
+          msg.text
+        )}
+      </div>
+    </div>
+  ))}
+  {isLoading && (
+    <div className="message bot">
+      <div className="message-content loading">
+        <span>.</span><span>.</span><span>.</span>
+      </div>
+    </div>
+  )}
+  <div ref={messagesEndRef} />
+</div>
           <div className="input-container">
             <form onSubmit={handleSubmit} className="input-form">
-              <input
-                type="text"
+            <textarea
                 value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
+                onChange={(e) => setInputMessage(e.target.value)  
+                }
                 placeholder="Tapez votre message ici..."
                 disabled={isLoading}
-              />
+                rows="1" 
+                ref={textareaRef}
+                className="input-textarea"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault(); 
+                    handleSubmit(e); 
+                  }
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "auto"; 
+                  e.target.style.height = `${e.target.scrollHeight}px`; 
+                }}
+    />
               <button type="submit" disabled={isLoading || inputMessage.trim() === ''}>
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
                   <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z"/>
