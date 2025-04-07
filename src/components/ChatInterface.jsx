@@ -4,9 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import Avatar from './Avatar.jsx';
 import '../App.css';
 
-const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = () => {} }) => {
+const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = () => {}, toLogin }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState("ChatInterface");
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null); 
 
@@ -16,6 +17,7 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
 
   useEffect(() => {
     scrollToBottom();
@@ -67,7 +69,7 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
        <>
        <div className="chat-header">
          <h2 className="chat-title">Medic.ial</h2>
-         <Avatar />
+         <Avatar onClick={toLogin}/>
        </div>
        <div className="no-messages-view">
          <div className="welcome-content">
@@ -108,7 +110,7 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
       ) : (
         <>
           <div className="chat-header">
-            <Avatar />
+            <Avatar onClick={toLogin}/>
             <h2 className="chat-title">Medic.ial</h2>
           </div>
           <div className="messages-container">

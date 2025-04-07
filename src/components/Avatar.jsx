@@ -1,11 +1,11 @@
 import React from 'react';
 import '../avatar.css'; 
 
-export default function Avatar() {
+export default function Avatar({onClick}) {
 
 
   return (
-    <div className="avatar-container">
+    <div className="avatar-container" onClick={onClick}>
       <div
         className="avatar-image-wrapper"
      
