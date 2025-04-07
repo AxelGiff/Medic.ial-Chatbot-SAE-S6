@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import './App.css';
 import ChatInterface from './components/ChatInterface';
 import Panel from './components/Panel';
+import Login from './components/Login';
+import Signin from './components/Signin';
+
 
 function App() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -37,17 +40,22 @@ function App() {
     }
   };
 
+  const [page, setPage] = useState("chat");
+
   return (
     <div className={`App ${isCollapsed ? 'panel-collapsed' : ''}`}>
-      <Panel 
-        conversations={conversations}
-        setConversations={setConversations}
-        activeConversationId={activeConversationId}
-        setActiveConversationId={setActiveConversationId}
-        onNewChat={handleNewChat} 
-        onToggleCollapse={toggleCollapse} 
-        isCollapsed={isCollapsed} 
-      />
+
+    {page === "chat" && (
+        <Panel 
+          conversations={conversations}
+          setConversations={setConversations}
+          activeConversationId={activeConversationId}
+          setActiveConversationId={setActiveConversationId}
+          onNewChat={handleNewChat} 
+          onToggleCollapse={toggleCollapse} 
+          isCollapsed={isCollapsed} 
+        />
+      )}
       
       <div className="main-content">
         {isCollapsed && (
@@ -76,12 +84,15 @@ function App() {
             </span>
           </button>
         )}
-        
-        <ChatInterface
-          messages={messages}
-          setMessages={setMessages}
-          onMessageSent={handleMessageSent}
-        />
+
+        {page === "chat" && 
+          <ChatInterface
+            messages={messages}
+            setMessages={setMessages}
+            onMessageSent={handleMessageSent}
+            toLogin={() => setPage("login")}/>}
+        {page === "login" && <Login toSignin={() => setPage("signin")}/>}
+        {page === "signin" && <Signin toLogin={() => setPage("login")}/>}
       </div>
     </div>
   );
