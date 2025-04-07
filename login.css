@@ -71,6 +71,12 @@
     color: white;
 }
 
+input:focus {
+    border: none;
+    outline: none;
+    border-bottom: 1px solid white;
+}
+
 .form-input {
     border: none;
     box-shadow: none;
