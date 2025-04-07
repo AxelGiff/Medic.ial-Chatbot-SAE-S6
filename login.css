@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Trade+Winds&display=swap');
+
+.login {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+.title-1 {
+    text-align: center;
+    font-weight: 200;
+    margin: 3%;
+}
+
+.title-2 {
+    text-align: center;
+}
+
+.title-2 span {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.container-form {
+    background-color: rgb(30, 33, 54, 0.2);
+    border-radius: 20px;
+    width: 50%;
+    height: 30rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    color: white;
+    width: 60%;
+    height: 90%;
+}
+
+
+.form-container-input {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.form-container-name {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+
+}
+
+.form-container-input>input, .form-container-name input {
+    height: 2rem;
+    color: white;
+}
+
+.form-input {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    border-bottom: 1px solid white;
+}
+
+.form-title {
+    font-size: x-small;
+}
+
+.form-container-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.form-container-submit>p {
+    text-decoration: underline;
+    font-size: small;
+    cursor: pointer;
+}
+
+.form-container-submit>button {
+    background: none;
+    border: 1px solid white;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    width: 15rem;
+    height: 3rem;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+}
+
+.form-container-submit>button:hover {
+    background: white;
+    color: black;
+}
