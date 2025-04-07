@@ -7,7 +7,6 @@ import '../App.css';
 const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = () => {}, toLogin }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState("ChatInterface");
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null); 
 
