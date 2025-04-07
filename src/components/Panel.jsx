@@ -16,6 +16,13 @@ const Panel = ({
     onNewChat(); 
   };
 
+const deleteConversation=(conversationId)=>{
+  console.log(conversationId)
+  setConversations(prev => prev.filter(chat => chat.id !== conversationId));
+  setActiveConversationId(null);
+  
+}
+
   return (
     <div className={`sidebar-panel ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
@@ -58,9 +65,12 @@ const Panel = ({
             </span>
           )}
         </button>
+    
       </div>
 
       <div className="conversations-list">
+        <div class="conversation-today">
+          <h6 className="conversation-today-title">Aujourd'hui</h6>
         {conversations.map(chat => (
           <div 
             key={chat.id} 
@@ -78,10 +88,27 @@ const Panel = ({
                 <div className="conversation-title">{chat.title}</div>
                 <div className="conversation-date">{chat.date}</div>
               </div>
+              <button className="delete-button" onClick={(e) => {
+                    e.stopPropagation();
+                    deleteConversation(chat.id);
+                  }}>
+
+
+        
+              <span>
+                <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M4 7H20" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+              </span>
+           
+            </button>
               </>
             )}
           </div>
         ))}
+        </div>
+        <div class="conversation-before">
+          <h6 className="conversation-before-title">Les 30 derniers jours</h6>
+          
+           </div>
       </div>
 
     </div>
