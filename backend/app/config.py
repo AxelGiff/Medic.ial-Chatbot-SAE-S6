@@ -1,9 +1,6 @@
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
-import hashlib
-
-from config import MONGO_URI, DB_NAME  
+from pymongo import MongoClient 
 
 load_dotenv()
 

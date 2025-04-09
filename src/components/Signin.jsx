@@ -23,7 +23,7 @@ function Signin({toLogin}) {
                 },
                 body: JSON.stringify(formData)
             });
-            
+
             if (res.ok) {
                 const data = await res.json();
                 toLogin();
