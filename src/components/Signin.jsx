@@ -16,7 +16,7 @@ function Signin({toLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://127.0.0.1:8000/register", {
+            const res = await fetch("https://backendmedicial.onrender.com/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
