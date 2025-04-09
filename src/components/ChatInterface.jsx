@@ -7,25 +7,9 @@ import '../App.css';
 const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = () => {}, toLogin }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [placeholder, setPlaceholder] = React.useState('');
-
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null); 
 
-  const
-  string = 'This is the final string.',
-  index = React.useRef(0);
-
-    React.useEffect(() => {
-      function tick() {
-        setPlaceholder(prev => prev + string[index.current]);
-        index.current++;
-      }
-      if (index.current < string.length) {
-        let addChar = setInterval(tick, 500);
-        return () => clearInterval(addChar);
-      }
-    }, [placeholder]);
 
   const isMarkdown = (text) => /[#*_>`-]/.test(text);
 
@@ -77,6 +61,7 @@ const ChatInterface = ({ messages = [], setMessages = () => {}, onMessageSent = 
     
   };
 
+  // Le reste du composant reste inchangé
   return (
     <div className="chat-container">
       {messages.length === 0 ? (
