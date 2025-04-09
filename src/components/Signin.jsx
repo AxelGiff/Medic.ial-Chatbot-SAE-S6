@@ -26,6 +26,7 @@ function Signin({toLogin}) {
 
             if (res.ok) {
                 const data = await res.json();
+                console.log(data);
                 toLogin();
             } else {
                 const errorData = await res.json().catch(() => ({}));
