@@ -4,5 +4,9 @@ from pymongo import MongoClient
 
 load_dotenv()
 
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client[os.getenv("DB_NAME")]
+try:
+    client = MongoClient(os.getenv("MONGO_URI"))
+    db = client[os.getenv("DB_NAME")]
+    print(db)
+except Exception as e:
+    print("Erreur de connexion :", e)
