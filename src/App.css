@@ -248,6 +248,13 @@
   max-width: 600px; 
 }
 
+.conversation-date{
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-top: 2px;
+  color:rgb(183, 183, 183);
+}
+
 /* ----- Formulaire d'entrée ----- */
 .input-form {
   display: flex;
