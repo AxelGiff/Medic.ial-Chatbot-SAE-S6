@@ -16,7 +16,7 @@ function Signin({toLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("https://backendmedicial.onrender.com/register", {
+            const res = await fetch("https://medic-ial.netlify.app/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
