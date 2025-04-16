@@ -1,7 +1,6 @@
 const { MongoClient } = require('mongodb');
 
 exports.handler = async function(event, context) {
-  // Vérifier que c'est une requête POST
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -20,13 +19,11 @@ exports.handler = async function(event, context) {
     const MONGODB_URI = process.env.MONGODB_URI;
     const DB_NAME = process.env.DB_NAME;
 
-    // Connexion à MongoDB
     const client = new MongoClient(MONGODB_URI);
     await client.connect();
     const db = client.db(DB_NAME);
     const users = db.collection('users');
 
-    // Vérifier si l'email existe déjà
     const existingUser = await users.findOne({ email });
     if (existingUser) {
       return { 
@@ -40,7 +37,7 @@ exports.handler = async function(event, context) {
       prenom,
       nom,
       email,
-      password, // Idéalement, hashez ce mot de passe avant de l'enregistrer
+      password, 
       createdAt: new Date()
     });
 
