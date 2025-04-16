@@ -16,7 +16,7 @@ function Signin({toLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("https://medic-ial.netlify.app/register", {
+            const res = await fetch("/.netlify/functions/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
