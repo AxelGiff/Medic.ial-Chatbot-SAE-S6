@@ -8,48 +8,98 @@ const Panel = ({
   setActiveConversationId,
   onToggleCollapse,
   isCollapsed,
-  onNewChat
+  onNewChat,
+  userName, 
+  onLogout,
+  userRole,
+  setPage
 }) => {
 
 
+  
+  // Fonctions existantes
   const createNewChat = () => {
     onNewChat(); 
   };
 
-const deleteConversation=(conversationId)=>{
-  console.log(conversationId)
-  setConversations(prev => prev.filter(chat => chat.id !== conversationId));
-  setActiveConversationId(null);
-  
-}
+  const deleteConversation = async (conversationId) => {
+    try {
+      const response = await fetch(`http://localhost:7860/api/conversations/${conversationId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        // Supprimer la conversation localement
+        setConversations(prev => prev.filter(chat => chat.id !== conversationId));
+        
+        // Si la conversation active est supprimée, réinitialiser
+        if (activeConversationId === conversationId) {
+          setActiveConversationId(null);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
+  };
 
   return (
     <div className={`sidebar-panel ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         {!isCollapsed && (
-          <button className="collapse-button" onClick={onToggleCollapse}>
-            <svg
-              fill="#FFFF"
-              width="20"
-              height="20"
-              viewBox="0 0 32 32"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <style>{`.cls-1{fill:none;}`}</style>
-              </defs>
-              <title>open-panel--solid--left</title>
-              <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4Zm0,22H12V6H28Z" />
-              <rect
-                id="_Transparent_Rectangle_"
-                data-name="<Transparent Rectangle>"
-                className="cls-1"
+          <>
+            <button className="collapse-button" onClick={onToggleCollapse}>
+              {/* SVG existant */}
+              <svg
+                fill="#FFFF"
                 width="20"
                 height="20"
-              />
-            </svg>
-          </button>
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <style>{`.cls-1{fill:none;}`}</style>
+                </defs>
+                <title>open-panel--solid--left</title>
+                <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4Zm0,22H12V6H28Z" />
+                <rect
+                  id="_Transparent_Rectangle_"
+                  data-name="<Transparent Rectangle>"
+                  className="cls-1"
+                  width="20"
+                  height="20"
+                />
+              </svg>
+            </button>
+            
+            {/* Affichage du nom d'utilisateur */}
+            {userName && (
+              <div className="user-info">
+                <span className="username">{userName}</span>
+                {userRole === "Administrateur" && (
+              <button 
+                onClick={() => setPage("Administrateur")}
+                className="admin-btn"
+              >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#4CAF50" viewBox="0 0 16 16">
+                      <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    Admin
+                  </button>
+                )}
+                <button onClick={onLogout} className="logout-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.90002 7.56001C9.21002 3.96001 11.06 2.49001 15.11 2.49001H15.24C19.71 2.49001 21.5 4.28001 21.5 8.75001V15.27C21.5 19.74 19.71 21.53 15.24 21.53H15.11C11.09 21.53 9.24002 20.08 8.91002 16.54" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15 12H3.62" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M5.85 8.65002L2.5 12L5.85 15.35" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Déconnexion
+                </button>
+              </div>
+            )}
+          </>
         )}
+        
         <button className="new-chat-button" onClick={createNewChat}>
           {!isCollapsed && (
             <span>
@@ -65,52 +115,44 @@ const deleteConversation=(conversationId)=>{
             </span>
           )}
         </button>
-    
       </div>
 
+      {/* Reste du composant inchangé */}
       <div className="conversations-list">
-        <div class="conversation-today">
+        <div className="conversation-today">
           <h6 className="conversation-today-title">Aujourd'hui</h6>
-        {conversations.map(chat => (
-          <div 
-            key={chat.id} 
-            className={`conversation-item ${activeConversationId === chat.id ? 'active' : ''}`}
-            onClick={() => setActiveConversationId(chat.id)}
-          >
-           
-            {!isCollapsed && (
-              <>
-               <div className="conversation-icon">
-               <span className="material-icons">{chat.time}</span>
-             </div>
-              <div className="conversation-details">
-                
-                <div className="conversation-title">{chat.title}</div>
-                <div className="conversation-date">{chat.date}</div>
-              </div>
-              <button className="delete-button" onClick={(e) => {
+          {conversations.map(chat => (
+            <div 
+              key={chat.id} 
+              className={`conversation-item ${activeConversationId === chat.id ? 'active' : ''}`}
+              onClick={() => setActiveConversationId(chat.id)}
+            >
+              {!isCollapsed && (
+                <>
+                  <div className="conversation-icon">
+                    <span className="material-icons">{chat.time}</span>
+                  </div>
+                  <div className="conversation-details">
+                    <div className="conversation-title">{chat.title}</div>
+                    <div className="conversation-date">{chat.date}</div>
+                  </div>
+                  <button className="delete-button" onClick={(e) => {
                     e.stopPropagation();
                     deleteConversation(chat.id);
                   }}>
-
-
-        
-              <span>
-                <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M4 7H20" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-              </span>
-           
-            </button>
-              </>
-            )}
-          </div>
-        ))}
+                    <span>
+                      <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 12V17" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M4 7H20" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                    </span>
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
         </div>
-        <div class="conversation-before">
+        <div className="conversation-before">
           <h6 className="conversation-before-title">Les 30 derniers jours</h6>
-          
-           </div>
+        </div>
       </div>
-
     </div>
   );
 };

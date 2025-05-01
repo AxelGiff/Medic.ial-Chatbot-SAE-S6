@@ -16,7 +16,7 @@ function Signin({toLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("/.netlify/functions/register", {
+            const res = await fetch("http://localhost:7860/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
