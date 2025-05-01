@@ -2,3 +2,8 @@ fastapi
 uvicorn[standard]
 pymongo
 python-dotenv
+torch==2.1.*
+transformers==4.*
+sentence-transformers
+numpy<2.0
+pypDF2
