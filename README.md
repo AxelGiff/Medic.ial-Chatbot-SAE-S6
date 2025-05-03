@@ -3,15 +3,11 @@
 # 📄 Mise en contexte
 Ce projet a pour objectif de développer une application capable de répondre aux questions des utilisateurs sur des sujets de santé mais plus précisement la schizophrénie 
 
-### L’objectif de ce projet va être de réaliser 4 modèles différents en utilisant le jeu de données UTKFace, à savoir :  
-* Modèle de Classification de Genre avec CNN 
-* Modèle de Classification d’âge avec une approche de régression 
-* Modèle de Classification simultanée de Genre et d’âge 
-* Modèle pré-entraîné avec l’utilisation du transfer learning et comparatifs avec d’autres modèles pré-entraînés
+### L’objectif de ce projet va être de réaliser un Chatbot médical :  
+* Modèle spécialisé sur la schizophrénie
 
 ### Pour permettre par la suite de :
-* Créer une interface Gradio
-* Déployer l'application et tous les modèles sur HuggingFaces
+* Déployer l'application sur internet
 
 ## 👥 Membres de l'équipe
 * CABO India
@@ -44,9 +40,9 @@ Cela permettra au cours de nos études de présenter ce projet et que les utilis
 
 ## 🛠️ Langages et outils
 - [Python](https://docs.python.org/)
-- [Tensorflow](https://www.tensorflow.org/api_docs).
-- [Keras](https://keras.io/).
-- [Gradio](https://www.gradio.app/docs).
+- [Tensorflow](https://www.tensorflow.org/api_docs)
+- [Keras](https://keras.io/)
+- [Gradio](https://www.gradio.app/docs)
 - [HuggingFaces](https://huggingface.co/)
 - [Atlas](https://www.mongodb.com/docs/)
 - [React](https://react.dev/reference/react)
