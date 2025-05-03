@@ -56,6 +56,9 @@ npm start
    ```bash
    uvicorn app:app --reload --port 8000
    ```
+   **EndPoints**
+   ![image](https://github.com/user-attachments/assets/331ec2e0-004b-411c-a42e-e6a68ebf4c24)
+
 
 
 # Pourquoi réaliser ce projet ? 
@@ -80,13 +83,15 @@ Cela permettra au cours de nos études de présenter ce projet et que les utilis
 
 ## 🛠️ Langages et outils
 - [Python](https://docs.python.org/)
-- [Tensorflow](https://www.tensorflow.org/api_docs)
-- [Keras](https://keras.io/)
+- [NumPy](https://numpy.org/doc/2.2/)
+- [PyMongo](https://pymongo.readthedocs.io/en/stable/)
+- [Langchain](https://python.langchain.com/api_reference/core/index.html)
 - [Gradio](https://www.gradio.app/docs)
 - [HuggingFaces](https://huggingface.co/)
 - [Atlas](https://www.mongodb.com/docs/)
 - [React](https://react.dev/reference/react)
 - [CSS](https://developer.mozilla.org/fr/docs/Web/CSS/Reference)
+- [FastAPI](https://devdocs.io/fastapi/)
 
 # 🖼️ Les documents de connaissance
 La base de connaissances constitue le centre même du chatbot. Elle a été conçue de façon à fournir des réponses fiables, à partir de documents médicaux sélectionnés avec soin. 
