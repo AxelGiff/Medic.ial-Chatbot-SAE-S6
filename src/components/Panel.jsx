@@ -17,23 +17,20 @@ const Panel = ({
 
 
   
-  // Fonctions existantes
   const createNewChat = () => {
     onNewChat(); 
   };
 
   const deleteConversation = async (conversationId) => {
     try {
-      const response = await fetch(`http://localhost:7860/api/conversations/${conversationId}`, {
+      const response = await fetch(`http://localhost:8000/api/conversations/${conversationId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
       
       if (response.ok) {
-        // Supprimer la conversation localement
         setConversations(prev => prev.filter(chat => chat.id !== conversationId));
         
-        // Si la conversation active est supprimée, réinitialiser
         if (activeConversationId === conversationId) {
           setActiveConversationId(null);
         }
@@ -49,7 +46,6 @@ const Panel = ({
         {!isCollapsed && (
           <>
             <button className="collapse-button" onClick={onToggleCollapse}>
-              {/* SVG existant */}
               <svg
                 fill="#FFFF"
                 width="20"
@@ -72,7 +68,6 @@ const Panel = ({
               </svg>
             </button>
             
-            {/* Affichage du nom d'utilisateur uniquement */}
             {userName && (
               <div className="user-info">
                 <span className="username">{userName}</span>
@@ -98,7 +93,6 @@ const Panel = ({
         </button>
       </div>
 
-      {/* Liste des conversations */}
       <div className="conversations-list">
         <div className="conversation-today">
           <h6 className="conversation-today-title">Aujourd'hui</h6>
@@ -135,7 +129,6 @@ const Panel = ({
         </div>
       </div>
 
-      {/* Nouveau footer avec les boutons */}
       {!isCollapsed && (
         <div className="sidebar-footer">
           {userRole === "Administrateur" && (
