@@ -6,7 +6,7 @@ function Signin({toLogin}) {
         prenom: '',
         nom: '',
         email: '',
-        password: '', // Changé de password_hash à password pour correspondre à l'API
+        password: '', 
     });
     
     const handleChange = (e) => {
@@ -16,7 +16,7 @@ function Signin({toLogin}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://localhost:7860/api/register", {
+            const res = await fetch("http://localhost:8000/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
