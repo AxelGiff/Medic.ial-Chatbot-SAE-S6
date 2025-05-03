@@ -72,29 +72,10 @@ const Panel = ({
               </svg>
             </button>
             
-            {/* Affichage du nom d'utilisateur */}
+            {/* Affichage du nom d'utilisateur uniquement */}
             {userName && (
               <div className="user-info">
                 <span className="username">{userName}</span>
-                {userRole === "Administrateur" && (
-              <button 
-                onClick={() => setPage("Administrateur")}
-                className="admin-btn"
-              >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#4CAF50" viewBox="0 0 16 16">
-                      <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                    </svg>
-                    Admin
-                  </button>
-                )}
-                <button onClick={onLogout} className="logout-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.90002 7.56001C9.21002 3.96001 11.06 2.49001 15.11 2.49001H15.24C19.71 2.49001 21.5 4.28001 21.5 8.75001V15.27C21.5 19.74 19.71 21.53 15.24 21.53H15.11C11.09 21.53 9.24002 20.08 8.91002 16.54" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M15 12H3.62" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M5.85 8.65002L2.5 12L5.85 15.35" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Déconnexion
-                </button>
               </div>
             )}
           </>
@@ -117,7 +98,7 @@ const Panel = ({
         </button>
       </div>
 
-      {/* Reste du composant inchangé */}
+      {/* Liste des conversations */}
       <div className="conversations-list">
         <div className="conversation-today">
           <h6 className="conversation-today-title">Aujourd'hui</h6>
@@ -153,6 +134,31 @@ const Panel = ({
           <h6 className="conversation-before-title">Les 30 derniers jours</h6>
         </div>
       </div>
+
+      {/* Nouveau footer avec les boutons */}
+      {!isCollapsed && (
+        <div className="sidebar-footer">
+          {userRole === "Administrateur" && (
+            <button 
+              onClick={() => setPage("Administrateur")}
+              className="admin-btn"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#4CAF50" viewBox="0 0 16 16">
+                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+              </svg>
+              Administration
+            </button>
+          )}
+          <button onClick={onLogout} className="logout-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.90002 7.56001C9.21002 3.96001 11.06 2.49001 15.11 2.49001H15.24C19.71 2.49001 21.5 4.28001 21.5 8.75001V15.27C21.5 19.74 19.71 21.53 15.24 21.53H15.11C11.09 21.53 9.24002 20.08 8.91002 16.54" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M15 12H3.62" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5.85 8.65002L2.5 12L5.85 15.35" stroke="#FF5252" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Déconnexion
+          </button>
+        </div>
+      )}
     </div>
   );
 };

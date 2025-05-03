@@ -61,7 +61,9 @@ useEffect(() => {
       console.error('Erreur:', error);
     }
   };
-  
+  const refreshConversationList = async () => {
+    await fetchConversations(); // Rafraîchit juste la liste sans réinitialiser activeConversationId
+  };
   // Fonction pour charger les messages d'une conversation sélectionnée
   const loadConversationMessages = async (conversationId) => {
     try {
@@ -173,8 +175,8 @@ useEffect(() => {
   };
   
   // Fonction pour sauvegarder la réponse du bot
-  const saveBotResponse = async (conversationId, botResponse) => {
-    if (!conversationId) return;
+  const saveBotResponse = async (conversationId, botResponse, shouldSave = false) => {
+    if (!conversationId || !shouldSave) return;
     
     try {
       await fetch(`http://localhost:7860/api/conversations/${conversationId}/messages`, {
@@ -253,6 +255,7 @@ useEffect(() => {
           onLogout={handleLogout}
           setPage={setPage}
           userRole={userRole}
+          
         />
       )}
        {page === "Administrateur" && (
@@ -295,6 +298,7 @@ useEffect(() => {
 
         {page === "chat" && 
           <ChatInterface
+          
             messages={messages}
             setMessages={setMessages}
             onMessageSent={handleMessageSent}
@@ -302,6 +306,9 @@ useEffect(() => {
             saveBotResponse={saveBotResponse}
             userName={userName}
             toLogin={handleLogout} 
+            onNewChat={handleNewChat}
+            refreshConversationList={refreshConversationList} 
+
           />
         }
         {page === "login" && <Login toSignin={() => setPage("signin")} onLoginSuccess={handleLoginSuccess}/>}

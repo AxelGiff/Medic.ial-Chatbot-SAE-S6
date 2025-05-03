@@ -17,6 +17,12 @@
   background-attachment: fixed; 
 }
 
+
+@keyframes cursor-blink {
+  from, to { border-right-color: transparent }
+  50% { border-right-color: #ffffff; }
+}
+
 /* À ajouter dans votre fichier CSS */
 .user-info {
   display: flex;
@@ -70,6 +76,113 @@
   flex-direction: column;
   transition: margin-left 0.3s ease;
 
+}
+
+
+
+.token-limit-warning {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+  padding: 10px;
+  background-color: rgba(255, 193, 7, 0.1);
+  border-radius: 8px;
+}
+
+.new-conversation-button {
+  background-color: #4D59FB;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.new-conversation-button:hover {
+  background-color: #3A46E8;
+}
+
+.new-conversation-button::before {
+  content: "+";
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.streaming-message {
+  position: relative;
+  display: block !important;
+  width: 100% !important;
+}
+
+.streaming-message * {
+  display: block !important;
+  width: 100% !important;
+}
+
+.streaming-message p,
+.streaming-message h1,
+.streaming-message h2,
+.streaming-message h3,
+.streaming-message h4,
+.streaming-message h5,
+.streaming-message h6,
+.streaming-message ul,
+.streaming-message ol,
+.streaming-message li,
+.streaming-message blockquote {
+  clear: both !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* Correction des listes */
+.streaming-message ul li,
+.streaming-message ol li {
+  display: list-item !important;
+  margin-left: 20px;
+}
+
+.message.bot .message-content {
+  display: block !important;
+  width: 100% !important;
+}
+
+.message.bot .message-content * {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  word-break: break-word;
+  white-space: normal !important;
+}
+
+.message.bot .message-content p,
+.message.bot .message-content h1,
+.message.bot .message-content h2,
+.message.bot .message-content h3,
+.message.bot .message-content h4,
+.message.bot .message-content h5,
+.message.bot .message-content h6,
+.message.bot .message-content ul,
+.message.bot .message-content ol,
+.message.bot .message-content li,
+.message.bot .message-content blockquote {
+  clear: both !important;
+  float: none !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* Correction des listes */
+.message.bot .message-content ul li,
+.message.bot .message-content ol li {
+  display: list-item !important;
+  margin-left: 20px;
 }
 .new-chat-button {
  
@@ -233,6 +346,11 @@
   border-bottom-left-radius: 4px;
 }
 
+.message.bot .message-content.loading * {
+  display: inline-block !important;
+  width: auto !important;
+}
+
 /* ----- Animation pour l'apparition ----- */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(5px); }
@@ -240,12 +358,37 @@
 }
 
 /* ----- Indicateur de chargement ----- */
+.loading {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 .loading span {
-  display: inline-block;
+  display: inline-block !important;
   animation: loading-dots 1.4s infinite ease-in-out;
   font-size: 1.2rem;
-  margin-right: 2px;
+  margin-right: 4px;
+  width: auto !important;
 }
+
+.loading-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-dots {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  animation: blink 1.4s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
 
 @keyframes loading-dots {
   0%, 80%, 100% { transform: scale(0); }
@@ -477,4 +620,52 @@ h2{
   border: none;
   color: #fff;
   cursor: pointer;
+}
+
+.sidebar-footer {
+  z-index:99999;
+  margin-top: auto;
+  border-top: 1px solid #525467;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.admin-btn:hover {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: rgba(255, 82, 82, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 82, 82, 0.2);
 }

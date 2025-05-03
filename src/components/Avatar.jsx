@@ -13,7 +13,7 @@ export default function Avatar({onClick}) {
         <img
           className="circular--portrait-img"
           alt="me"
-          src={new URL("../../public/emojipouce.png", import.meta.url).href}
+          src={new URL("../../public/logo_schizoprene.png", import.meta.url).href}
         />
       </div>
     </div>
