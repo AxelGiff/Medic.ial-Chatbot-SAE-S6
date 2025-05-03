@@ -33,6 +33,7 @@ cd test_iamedical
 ```
 
 ### 2. Lancer le frontend
+A la racine :
 ```bash
 npm install
 npm start
