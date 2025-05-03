@@ -29,6 +29,7 @@ def download_pdf(url, save_path, retries=2, delay=3):
             time.sleep(delay)
     print(f"Échec du téléchargement : {url}")
 '''
+COMMENTAIRE POUR M. FAYE : MIS EN COMMENTAIRE CAR L'AJOUT DES PDF D'EMBEDDING A DEJA ÉTÉ REALISÉE EN BACKUP
 def init_documents():
     """Initialise les documents dans la base de données avec leurs embeddings."""
     os.makedirs(SAVE_FOLDER, exist_ok=True)
