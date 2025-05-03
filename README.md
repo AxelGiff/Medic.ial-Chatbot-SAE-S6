@@ -28,7 +28,7 @@ Cependant, bien qu’il apporte un soutien informatif utile, ce chatbot ne rempl
 
 ### 1. Cloner le projet
 ```bash
-git clone https://github.com/AxelGiff/test_iamedical.git
+git clone https://github.com/AxelGiff/Medic.ial-Chatbot-SAE-S6.git
 cd test_iamedical
 ```
 
