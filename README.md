@@ -112,7 +112,11 @@ def retrieve_relevant_context(query, embedding_model, mongo_collection, k=3):
     return "\n".join(top_k_docs)
 
 ```
+**Interface Web**
+
 ![image](https://github.com/user-attachments/assets/76324027-3caa-4a3a-ac62-e4662fee475f)
+
+**Backend extraction des documents avec le meilleur matching**
 
 ![image](https://github.com/user-attachments/assets/6f63e9ed-1d48-4d9d-ad29-396e1e391e04)
 
