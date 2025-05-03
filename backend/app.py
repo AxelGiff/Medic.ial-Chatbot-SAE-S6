@@ -28,8 +28,8 @@ app.include_router(admin.router)
 
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
-'''
+#app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 @app.get("/")
 async def root():
     """Page d'accueil de l'API Medic.ial."""
@@ -47,7 +47,7 @@ async def root():
         "status": "En ligne",
         "environment": "Développement"
     }
-    '''
+ 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default=config.HOST) 
