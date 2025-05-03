@@ -21,7 +21,7 @@ Cependant, bien qu’il apporte un soutien informatif utile, ce chatbot ne rempl
 ## Demos 
 
 **Déploiement en ligne (Space HuggingFace) :** 
-- [Déploiement en ligne](https://huggingface.co/spaces/AxL95/medically))
+- [Déploiement en ligne](https://huggingface.co/spaces/AxL95/medically)
 
 
 ## Étapes pour lancer en local
