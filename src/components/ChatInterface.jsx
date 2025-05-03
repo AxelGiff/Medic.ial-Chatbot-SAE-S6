@@ -30,10 +30,8 @@ saveBotResponse, toLogin,  onCreateNewConversation = () => {},onNewChat = () => 
     setFullResponse(response);
     setStreamingText('');
     
-    // Garder une référence au message de streaming
     let streamMessageId = Date.now().toString();
     
-    // Ajouter un message de streaming avec un ID unique
     setMessages(prev => [...prev, { 
       sender: 'bot-streaming', 
       text: '', 
@@ -76,33 +74,27 @@ saveBotResponse, toLogin,  onCreateNewConversation = () => {},onNewChat = () => 
       setHasInteractionStarted(true);
       setIsLoading(true);
       
-      // Ajouter le message utilisateur uniquement à l'interface locale
       setMessages(prev => [...prev, { sender: 'user', text: message }]);
-      
-      // Modifier cette fonction dans le composant parent pour qu'elle ne duplique pas l'enregistrement
-      // mais conservez l'appel pour maintenir la logique existante
+     
       const updatedConversationId = await onMessageSent(message);
       
-      // Appel direct à l'API chat avec un flag pour ne PAS ré-enregistrer le message
-      const chatRes = await fetch('http://localhost:7860/api/chat', {
+      const chatRes = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ 
           message,
           conversation_id: activeConversationId,
-          skip_save: true  // Ajoutez ce flag pour dire au backend de ne pas ré-enregistrer
+          skip_save: true  
         }),
       });
       
       const responseData = await chatRes.json();
       
-      // Vérifier si la limite de tokens est atteinte
       if (responseData.error === 'token_limit_exceeded') {
         setIsLoading(false);
         setTokenLimitReached(true);
         
-        // Afficher un message à l'utilisateur
         setMessages(prev => [...prev, { 
           sender: 'bot', 
           text: "⚠️ **Limite de taille de conversation atteinte**\n\nCette conversation est devenue trop longue. Pour continuer à discuter, veuillez créer une nouvelle conversation." 
@@ -117,25 +109,16 @@ saveBotResponse, toLogin,  onCreateNewConversation = () => {},onNewChat = () => 
       
       setIsLoading(false);
       
-      // Afficher la réponse en streaming
       streamResponse(botResponse);
-      
-      // SUPPRIMER ou commenter cette section qui cause le problème de redirection
-      // if (activeConversationId) {
-      //   onNewChat(); // Ne PAS appeler cette fonction qui réinitialise la conversation
-      // }
-      
-      // Si vous avez besoin de mettre à jour la liste des conversations sans changer de conversation:
-      // Si refreshConversationList est disponible, l'utiliser à la place
+ 
       if (activeConversationId && typeof refreshConversationList === 'function') {
         refreshConversationList();
       }
       
-      // Sauvegarde de la réponse bot (avec flag false pour éviter doublon)
       if (updatedConversationId) {
-        saveBotResponse(updatedConversationId, botResponse, true);  // Changer false en true
+        saveBotResponse(updatedConversationId, botResponse, true);  
       } else if (activeConversationId) {
-        saveBotResponse(activeConversationId, botResponse, true);  // Changer false en true
+        saveBotResponse(activeConversationId, botResponse, true); 
       }
       
     } catch (error) {
@@ -150,7 +133,7 @@ saveBotResponse, toLogin,  onCreateNewConversation = () => {},onNewChat = () => 
   const handleCreateNewConversation = () => {
     onNewChat();
     setTokenLimitReached(false);
-    setHasInteractionStarted(false); // Cette ligne est importante
+    setHasInteractionStarted(false);
 
   };
   useEffect(() => {
