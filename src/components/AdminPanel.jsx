@@ -1,4 +1,3 @@
-// src/components/AdminPanel.js
 import React, { useState, useEffect } from 'react';
 import './AdminPanel.css';
 
@@ -20,7 +19,7 @@ function AdminPanel({ isCollapsed, onToggleCollapse, userName, onLogout,setPage 
   const fetchDocuments = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:7860/api/admin/knowledge', {
+      const response = await fetch('http://localhost:8000/api/admin/knowledge', {
         credentials: 'include'
       });
       
@@ -66,7 +65,7 @@ function AdminPanel({ isCollapsed, onToggleCollapse, userName, onLogout,setPage 
     formData.append('tags', uploadData.tags);
 
     try {
-      const response = await fetch('http://localhost:7860/api/admin/knowledge/upload', {
+      const response = await fetch('http://localhost:8000/api/admin/knowledge/upload', {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -78,7 +77,6 @@ function AdminPanel({ isCollapsed, onToggleCollapse, userName, onLogout,setPage 
         setUploadStatus('Document téléchargé avec succès!');
         setUploadData({ title: '', tags: '' });
         setSelectedFile(null);
-        // Recharger la liste des documents
       } else {
         setUploadStatus(`Erreur: ${data.detail || 'Échec du téléchargement'}`);
       }
@@ -93,7 +91,7 @@ function AdminPanel({ isCollapsed, onToggleCollapse, userName, onLogout,setPage 
     }
 
     try {
-        const response = await fetch(`http://localhost:7860/api/admin/knowledge/${docId}`, {
+        const response = await fetch(`http://localhost:8000/api/admin/knowledge/${docId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -101,8 +99,7 @@ function AdminPanel({ isCollapsed, onToggleCollapse, userName, onLogout,setPage 
       if (response.ok) {
         setDocuments(documents.filter(doc => doc.id !== docId));
         setUploadStatus('Document supprimé avec succès!');
-        setTimeout(() => setUploadStatus(null), 3000); // Effacer le message après 3 secondes
-        // Mettre à jour la liste des documents
+        setTimeout(() => setUploadStatus(null), 3000); 
       } else {
         const data = await response.json();
         setError(`Erreur: ${data.detail || 'Échec de la suppression'}`);
