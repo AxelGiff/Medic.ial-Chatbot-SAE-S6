@@ -119,4 +119,18 @@ def retrieve_relevant_context(query, embedding_model, mongo_collection, k=3):
 **Backend extraction des documents avec le meilleur matching**
 
 ![image](https://github.com/user-attachments/assets/6f63e9ed-1d48-4d9d-ad29-396e1e391e04)
+## Demos 
 
+**Déploiement en ligne (Space HuggingFace) :** https://huggingface.co/spaces/AxL95/medically
+
+**Etapes pour lancer en local :**
+1. Cloner le projet avec : 
+git clone https://github.com/AxelGiff/test_iamedical.git
+2. Lancer le front : 
+  npm install 
+  npm start
+3. Lancer le back : 
+IMPORTANT : Pour accéder au LLM, Mettez votre token HuggingFace dans le .env du backend : REACT_APP_HF_TOKEN="Mettre votre token HuggingFace"
+  cd backend
+  python app.py
+  (si cette commande ne fonctionne pas, dans /backend :       uvicorn app:app --reload --port 8000
