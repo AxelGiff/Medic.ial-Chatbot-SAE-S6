@@ -89,5 +89,30 @@ Dans un premeir temps, les documents sont découpés en chunk. Pour permettre pa
   - Recherche intelligente dans des bases de données de dossiers médicaux.
   - Clustering ou résumé automatique de documents cliniques.
 
+# 🔎 Similatiré entre les questions et les connaissances
 
+Pour que le Chatbot puisse répondre de la manière la plus précise possible aux questions des utilisateurs on utilise un système de matching.
+Voici une fonction d’exemple qui utilise un modèle d’embedding et une collection MongoDB pour retrouver les documents les plus similaires à une requête :
+
+```python
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def retrieve_relevant_context(query, embedding_model, mongo_collection, k=3):
+    query_embedding = embedding_model.embed_query(query)
+
+    docs = list(mongo_collection.find({}, {"text": 1, "embedding": 1}))
+    similarities = [
+        cosine_similarity([query_embedding], [doc["embedding"]])[0][0]
+        for doc in docs
+    ]
+
+    top_k_indices = np.argsort(similarities)[-k:][::-1]
+    top_k_docs = [docs[i]["text"] for i in top_k_indices]
+    return "\n".join(top_k_docs)
+
+```
+![image](https://github.com/user-attachments/assets/76324027-3caa-4a3a-ac62-e4662fee475f)
+
+![image](https://github.com/user-attachments/assets/6f63e9ed-1d48-4d9d-ad29-396e1e391e04)
 
