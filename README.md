@@ -24,20 +24,39 @@ Cependant, bien qu’il apporte un soutien informatif utile, ce chatbot ne rempl
 - [Déploiement en ligne](https://huggingface.co/spaces/AxL95/medically))
 
 
-### Etapes pour lancer en local :
-## 1. Cloner le projet avec : 
-  ```git git clone https://github.com/AxelGiff/test_iamedical.git```
-2. Lancer le front : 
-  ```bash npm install``` 
-  ```bash npm start```
-3. Lancer le back : 
-⚠️ IMPORTANT : Pour accéder au LLM, Mettez votre token HuggingFace dans le .env du backend : 
-**REACT_APP_HF_TOKEN="Mettre votre token HuggingFace"**
-  ```bash
-  cd backend
-  python app.py
-  (si cette commande ne fonctionne pas, dans /backend :       uvicorn app:app --reload --port 8000
+## Étapes pour lancer en local
+
+### 1. Cloner le projet
+```bash
+git clone https://github.com/AxelGiff/test_iamedical.git
+cd test_iamedical
 ```
+
+### 2. Lancer le frontend
+```bash
+npm install
+npm start
+```
+
+### 3. Lancer le backend
+⚠️ **IMPORTANT** : Pour accéder au LLM, vous devez configurer votre token HuggingFace
+
+1. Créez ou modifiez le fichier `.env` **dans le dossier backend :**
+   ```
+   REACT_APP_HF_TOKEN="Mettre votre token HuggingFace"
+   ```
+
+2. Démarrez le serveur :
+   ```bash
+   cd backend
+   python app.py
+   ```
+   
+   Si cette commande ne fonctionne pas, utilisez :
+   ```bash
+   uvicorn app:app --reload --port 8000
+   ```
+
 
 # Pourquoi réaliser ce projet ? 
 <details>
