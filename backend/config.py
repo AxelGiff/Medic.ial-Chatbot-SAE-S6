@@ -3,7 +3,7 @@ import secrets
 
 # Serveur
 HOST = os.getenv("API_URL", "0.0.0.0")
-PORT = int(os.getenv("PORT", "7860"))
+PORT = int(os.getenv("PORT", "8000"))
 
 # Sécurité
 SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_hex(32))
@@ -23,8 +23,8 @@ CORS_ORIGINS = [
     "https://axl95-medically.hf.space",
     "https://huggingface.co",
     "http://localhost:3000",
-    "http://localhost:7860",
-    "http://0.0.0.0:7860"
+    "http://localhost:8000",
+    "http://0.0.0.0:8000"
 ]
 
 # Modèles
