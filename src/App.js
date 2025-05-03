@@ -12,40 +12,35 @@ function App() {
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState('');
-  const [page, setPage] = useState("login"); // Démarrer sur login par défaut
+  const [page, setPage] = useState("login"); 
   const [userRole, setUserRole] = useState('');
 
-  // Vérifier si l'utilisateur est déjà connecté au chargement
-// Modifiez cette fonction dans App.js
+
 useEffect(() => {
   const storedUserName = localStorage.getItem('userName');
   const storedUserRole = localStorage.getItem('userRole');
 
   if (storedUserName) {
     setUserName(storedUserName);
-    setUserRole(storedUserRole); // Charge le rôle mais ne change pas la page
+    setUserRole(storedUserRole); 
     setIsAuthenticated(true);
     
-    // Toujours définir la page sur "chat" au début, quel que soit le rôle
     setPage("chat");
     
-    // Charger les conversations de l'utilisateur
     fetchConversations();
     
     console.log("Role chargé depuis localStorage:", storedUserRole);
   }
 }, []);
   
-  // Fonction pour récupérer les conversations depuis l'API
   const fetchConversations = async () => {
     try {
-      const response = await fetch('http://localhost:7860/api/conversations', {
-        credentials: 'include', // Important pour envoyer les cookies
+      const response = await fetch('http://localhost:8000/api/conversations', {
+        credentials: 'include', 
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Formater les données pour correspondre à votre format de conversation
         const formattedConversations = data.conversations.map(conv => ({
           id: conv._id,
           title: conv.title,
@@ -62,18 +57,16 @@ useEffect(() => {
     }
   };
   const refreshConversationList = async () => {
-    await fetchConversations(); // Rafraîchit juste la liste sans réinitialiser activeConversationId
+    await fetchConversations(); 
   };
-  // Fonction pour charger les messages d'une conversation sélectionnée
   const loadConversationMessages = async (conversationId) => {
     try {
-      const response = await fetch(`http://localhost:7860/api/conversations/${conversationId}/messages`, {
+      const response = await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
         credentials: 'include',
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Formater les messages pour correspondre à votre format
         const formattedMessages = data.messages.map(msg => ({
           sender: msg.sender,
           text: msg.text,
@@ -86,7 +79,6 @@ useEffect(() => {
     }
   };
   
-  // Au changement de conversation active
   useEffect(() => {
     if (activeConversationId && isAuthenticated) {
       loadConversationMessages(activeConversationId);
@@ -106,7 +98,6 @@ useEffect(() => {
     let conversationId = activeConversationId;
     
     if (!conversationId) {
-      // Créer une nouvelle conversation
       const newChatData = { 
         title: message.length > 15 ? message.substring(0, 15) + "..." : message,
         date: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
@@ -115,8 +106,7 @@ useEffect(() => {
       };
       
       try {
-        // Enregistrer la nouvelle conversation dans MongoDB
-        const response = await fetch('http://localhost:7860/api/conversations', {
+        const response = await fetch('http://localhost:8000/api/conversations', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -127,7 +117,7 @@ useEffect(() => {
         
         if (response.ok) {
           const data = await response.json();
-          conversationId = data.conversation_id; // Important: stocker l'ID dans une variable locale
+          conversationId = data.conversation_id; 
           
           const newChat = {
             id: conversationId,
@@ -139,8 +129,7 @@ useEffect(() => {
           setConversations([newChat, ...conversations]);
           setActiveConversationId(conversationId);
           
-          // IMPORTANT: Enregistrer le message utilisateur une fois l'ID disponible
-          await fetch(`http://localhost:7860/api/conversations/${conversationId}/messages`, {
+          await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -152,12 +141,12 @@ useEffect(() => {
         }
       } catch (error) {
         console.error('Erreur lors de la création de la conversation:', error);
-        return; // Arrêter si on ne peut pas créer la conversation
+        return;
       }
     } else {
-      // Sauvegarder le message utilisateur pour une conversation existante
+      
       try {
-        await fetch(`http://localhost:7860/api/conversations/${conversationId}/messages`, {
+        await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -171,15 +160,14 @@ useEffect(() => {
       }
     }
     
-    return conversationId; // Retourner l'ID pour le composant ChatInterface
+    return conversationId;
   };
   
-  // Fonction pour sauvegarder la réponse du bot
   const saveBotResponse = async (conversationId, botResponse, shouldSave = false) => {
     if (!conversationId || !shouldSave) return;
     
     try {
-      await fetch(`http://localhost:7860/api/conversations/${conversationId}/messages`, {
+      await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +184,6 @@ useEffect(() => {
   };
 
   const handleLoginSuccess = () => {
-    // Récupérer le nom d'utilisateur stocké par le composant Login
     const storedUserName = localStorage.getItem('userName');
     const storedUserRole = localStorage.getItem('userRole');
 
@@ -207,27 +194,23 @@ useEffect(() => {
     setPage(storedUserRole === "Administrateur" ? "Administrateur" : "chat");
 
     
-    // Charger les conversations de l'utilisateur
     fetchConversations();
   };
 
   const handleLogout = async () => {
     try {
-      // Appeler l'API de déconnexion
-      await fetch('http://localhost:7860/api/logout', {
+      await fetch('http://localhost:8000/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
       
-      // Nettoyer le stockage local
       localStorage.removeItem('userName');
       localStorage.removeItem('userId');
-      localStorage.removeItem('userRole'); // Ajout de cette ligne
+      localStorage.removeItem('userRole'); 
 
-      // Réinitialiser l'état
       setIsAuthenticated(false);
       setUserName('');
-      setUserRole(''); // Ajout de cette ligne
+      setUserRole(''); 
 
       setConversations([]);
       setMessages([]);
@@ -264,7 +247,7 @@ useEffect(() => {
         onToggleCollapse={toggleCollapse}
         userName={userName}
         onLogout={handleLogout}
-        setPage={setPage}  // Important: ajouter cette prop
+        setPage={setPage} 
       />
     )}
       
