@@ -2,25 +2,23 @@ import React, { useState } from 'react'
 import '../login.css';
 
 const Login = ({toSignin, onLoginSuccess}) => {
-    // États pour les champs du formulaire
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     
-    // Gérer la soumission du formulaire
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
         
         try {
-            const response = await fetch('http://localhost:7860/api/login', {
+            const response = await fetch('http://localhost:8000/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',  // Important pour accepter les cookies!
+                credentials: 'include',  
                 body: JSON.stringify({
                     email,
                     password
@@ -30,12 +28,11 @@ const Login = ({toSignin, onLoginSuccess}) => {
             const data = await response.json();
             
             if (response.ok) {
-                // Stockage du nom d'utilisateur dans localStorage
                 localStorage.setItem('userName', data.username);
                 localStorage.setItem('userId', data.user_id);
-                localStorage.setItem('userRole', data.role); // Stocker le rôle
+                localStorage.setItem('userRole', data.role); 
 
-                // Informer le composant parent que la connexion est réussie
+               
                 if (onLoginSuccess) {
                     onLoginSuccess();
                 }
@@ -59,7 +56,6 @@ const Login = ({toSignin, onLoginSuccess}) => {
                     <form onSubmit={handleSubmit} className='form'>
                         <h3>CONNEXION</h3>
                         
-                        {/* Afficher les erreurs */}
                         {error && <div className="error-message">{error}</div>}
                         
                         <div className='form-container-input'>
