@@ -18,6 +18,27 @@ Ce projet a pour objectif de développer une application capable de répondre au
 Le chatbot médical sur la schizophrénie est un outil numérique conçu pour fournir des informations claires et accessibles sur cette maladie mentale. Il permet aux utilisateurs de poser des questions et d’obtenir des réponses basées sur des données médicales fiables, concernant les symptômes, les traitements, les causes possibles ou encore le quotidien des personnes atteintes.
 Cependant, bien qu’il apporte un soutien informatif utile, ce chatbot ne remplace pas un professionnel de santé. Il ne pose aucun diagnostic, ne propose aucun traitement personnalisé et ne peut pas évaluer la condition d’un utilisateur. Les informations fournies doivent toujours être complétées ou confirmées par l’avis d’un médecin ou d’un psychiatre.
 
+## Demos 
+
+**Déploiement en ligne (Space HuggingFace) :** 
+- [Déploiement en ligne](https://huggingface.co/spaces/AxL95/medically))
+
+
+### Etapes pour lancer en local :
+## 1. Cloner le projet avec : 
+  ```git git clone https://github.com/AxelGiff/test_iamedical.git```
+2. Lancer le front : 
+  ```bash npm install``` 
+  ```bash npm start```
+3. Lancer le back : 
+⚠️ IMPORTANT : Pour accéder au LLM, Mettez votre token HuggingFace dans le .env du backend : 
+**REACT_APP_HF_TOKEN="Mettre votre token HuggingFace"**
+  ```bash
+  cd backend
+  python app.py
+  (si cette commande ne fonctionne pas, dans /backend :       uvicorn app:app --reload --port 8000
+```
+
 # Pourquoi réaliser ce projet ? 
 <details>
 <summary><b>Déroulez pour voir l'ensemble des objectifs : 
@@ -119,18 +140,3 @@ def retrieve_relevant_context(query, embedding_model, mongo_collection, k=3):
 **Backend extraction des documents avec le meilleur matching**
 
 ![image](https://github.com/user-attachments/assets/6f63e9ed-1d48-4d9d-ad29-396e1e391e04)
-## Demos 
-
-**Déploiement en ligne (Space HuggingFace) :** https://huggingface.co/spaces/AxL95/medically
-
-**Etapes pour lancer en local :**
-1. Cloner le projet avec : 
-git clone https://github.com/AxelGiff/test_iamedical.git
-2. Lancer le front : 
-  npm install 
-  npm start
-3. Lancer le back : 
-IMPORTANT : Pour accéder au LLM, Mettez votre token HuggingFace dans le .env du backend : REACT_APP_HF_TOKEN="Mettre votre token HuggingFace"
-  cd backend
-  python app.py
-  (si cette commande ne fonctionne pas, dans /backend :       uvicorn app:app --reload --port 8000
