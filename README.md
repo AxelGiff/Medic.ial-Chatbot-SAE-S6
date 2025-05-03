@@ -1,74 +1,53 @@
-# Install all the dependencies
+# Projet : Chatbot d'information médicale sur la schizophrénie
 
-### `pip install -r requirements.txt`
+# 📄 Mise en contexte
+Ce projet a pour objectif de développer une application capable de répondre aux questions des utilisateurs sur des sujets de santé mais plus précisement la schizophrénie 
 
-# Getting Started with Create React App
+### L’objectif de ce projet va être de réaliser 4 modèles différents en utilisant le jeu de données UTKFace, à savoir :  
+* Modèle de Classification de Genre avec CNN 
+* Modèle de Classification d’âge avec une approche de régression 
+* Modèle de Classification simultanée de Genre et d’âge 
+* Modèle pré-entraîné avec l’utilisation du transfer learning et comparatifs avec d’autres modèles pré-entraînés
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Pour permettre par la suite de :
+* Créer une interface Gradio
+* Déployer l'application et tous les modèles sur HuggingFaces
 
-## Available Scripts
+## 👥 Membres de l'équipe
+* CABO India
+* GIFFARD Axel
+* HAMSEK Fayçal
+* OUCHALLAL Samia
 
-In the project directory, you can run:
+Le chatbot médical sur la schizophrénie est un outil numérique conçu pour fournir des informations claires et accessibles sur cette maladie mentale. Il permet aux utilisateurs de poser des questions et d’obtenir des réponses basées sur des données médicales fiables, concernant les symptômes, les traitements, les causes possibles ou encore le quotidien des personnes atteintes.
+Cependant, bien qu’il apporte un soutien informatif utile, ce chatbot ne remplace pas un professionnel de santé. Il ne pose aucun diagnostic, ne propose aucun traitement personnalisé et ne peut pas évaluer la condition d’un utilisateur. Les informations fournies doivent toujours être complétées ou confirmées par l’avis d’un médecin ou d’un psychiatre.
 
-### `npm start`
+# Pourquoi réaliser ce projet ? 
+<details>
+<summary><b>Déroulez pour voir l'ensemble des objectifs : 
+</b></summary><br/>
+  
+- **Exploration et préparation des données** \
+  *Selection de documents qui seront la base des connaissances
+  *Traitement des documents ainsi que des questions pour avoir le plus haut matching possible entre eux
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Comprendre et appliquer les techniques propres aux LLM**  
+Cela implique d'avoir des notions en mathématiques, science des données, et informatiques pour appliquer des traitements, de savoir et connaître l'ensemble des paramètres et hyperparamètres utilisés, et de savoir optimiser nos modèles.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Analyser les biais potentiels** \
+Identifier les biais potentiels dans les réponses et les documents fournis au modèle pour ses connaissances.
 
-### `npm test`
+- **Développer une interface utilisateur** \
+Créer une interface simple permettant aux utilisateurs de poser leurs questions via React et CSS.
+Cela permettra au cours de nos études de présenter ce projet et que les utilisateurs puissent tester l'application.
+</details>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🛠️ Langages et outils
+- [Python](https://docs.python.org/)
+- [Tensorflow](https://www.tensorflow.org/api_docs).
+- [Keras](https://keras.io/).
+- [Gradio](https://www.gradio.app/docs).
+- [HuggingFaces](https://huggingface.co/)
+- [Atlas](https://www.mongodb.com/docs/)
+- [React](https://react.dev/reference/react)
+- [CSS](https://developer.mozilla.org/fr/docs/Web/CSS/Reference)
