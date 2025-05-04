@@ -1,6 +1,7 @@
 import os
 import secrets
-
+from dotenv import load_dotenv
+load_dotenv()  
 # Serveur
 HOST = os.getenv("API_URL", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
