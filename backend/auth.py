@@ -8,6 +8,7 @@ from database import get_db
 
 router = APIRouter(prefix="/api", tags=["Authentification"])
 
+# Fonction pour inscrire un utilisateur dans la base MongoDB
 @router.post("/register")
 async def register(request: Request):
     data = await request.json()
@@ -22,7 +23,7 @@ async def register(request: Request):
     if existing_user:
         raise HTTPException(status_code=409, detail="Cet email est déjà utilisé")
         
-    hashed_password = bcrypt.hash(data["password"])
+    hashed_password = bcrypt.hash(data["password"]) # On hash le password avec bcrypt pour la sécurité
         
     user = {
         "prenom": data["prenom"],
@@ -38,6 +39,7 @@ async def register(request: Request):
     
     return {"message": "Utilisateur créé avec succès", "userId": str(result.inserted_id)}
 
+# Fonction pour se connecter en tant qu'utilisateur ou admin
 @router.post("/login")
 async def login(request: Request, response: Response):
     try:
@@ -85,6 +87,7 @@ async def login(request: Request, response: Response):
         print(f"Erreur login: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Fonction pour se déconnecter
 @router.post("/logout")
 async def logout(request: Request, response: Response):
     db = get_db()
@@ -96,6 +99,7 @@ async def logout(request: Request, response: Response):
     response.delete_cookie(key="session_id")
     return {"success": True}
 
+# Fonction pour activer les sessions
 async def get_current_user(request: Request):
     db = get_db()
     session_id = request.cookies.get("session_id")
@@ -130,6 +134,7 @@ async def get_current_user(request: Request):
     
     return user
 
+# fonction de middleware pour savoir si le role est administrateur ou non
 async def get_admin_user(request: Request):
     user = await get_current_user(request)
     if user["role"] != "Administrateur":
