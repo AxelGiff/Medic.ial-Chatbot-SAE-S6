@@ -48,7 +48,6 @@
   50% { border-right-color: #ffffff; }
 }
 
-/* À ajouter dans votre fichier CSS */
 .user-info {
   display: flex;
   flex-direction: column;
@@ -78,7 +77,7 @@
   flex-direction: column;
   width: 100%;      
   max-width: 250px;    
-  height: 100vh; /* Add fixed height */
+  height: 100vh;
   background-color: #1E2136;   
   color: #ffffff;
   overflow-y: auto;          
@@ -94,7 +93,7 @@
   overflow: hidden;
 }
 
-/* ----- Contenu principal (zone de chat + header) ----- */
+/* ----- Contenu principal ----- */
 .main-content {
   flex: 1;                     
   display: flex;
@@ -308,7 +307,6 @@
   width: 100% !important;
 }
 
-/* Correction des listes */
 .streaming-message ul li,
 .streaming-message ol li {
   display: list-item !important;
@@ -346,7 +344,6 @@
   margin-bottom: 0.5em !important;
 }
 
-/* Correction des listes */
 .message.bot .message-content ul li,
 .message.bot .message-content ol li {
   display: list-item !important;
@@ -370,7 +367,6 @@
   height: 20px; 
   fill: #ffffff; 
 }
-/* ----- Header du chat ----- */
 .chat-header {
   display: flex;
   position: relative;
@@ -398,13 +394,11 @@
   font-family: 'Montserrat', sans-serif; 
   text-align: center; 
 }
-/* ----- Conteneur du chat (zone de messages + input) ----- */
 .chat-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
-/* ----- Vue sans message : contenu centré ----- */
 .no-messages-view {
   flex: 1;  
   display: flex;
@@ -444,7 +438,6 @@
   width: 100%;
 }
 
-/* ----- Zone des messages scrollable ----- */
 .messages-container {
   flex: 1; 
   overflow-y: auto; 
@@ -476,20 +469,18 @@
   .messages-container {
     margin-left: 2vw;
     margin-right: 2vw;
-    margin-bottom: 120px; /* Ajuste l'espace en bas pour les très petits écrans */
+    margin-bottom: 120px; 
   }
 }
-/* ----- Style des messages ----- */
 .message {
-  max-width: 70%; /* Limite la largeur des messages */
+  max-width: 70%; 
   padding: 12px 16px;
   border-radius: 8px;
   word-break: break-word;
   animation: fade-in 0.3s ease-in-out;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ajoute une ombre légère */
-}
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 .message.user {
-  align-self: flex-end; /* Aligne à droite */
+  align-self: flex-end;
   background: rgba(67, 72, 105, 0.3);
   backdrop-filter: blur(10px);
   color: #ffffff;
@@ -519,13 +510,11 @@
   width: auto !important;
 }
 
-/* ----- Animation pour l'apparition ----- */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ----- Indicateur de chargement ----- */
 .loading {
   display: flex !important;
   align-items: center;
@@ -590,7 +579,6 @@
   color:rgb(183, 183, 183);
 }
 
-/* ----- Formulaire d'entrée ----- */
 .input-form {
   display: flex;
   align-items: center; 
@@ -602,7 +590,6 @@
   max-width: 600px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-/* Input */
 .input-form input {
   flex: 1; 
   padding: 10px 12px;
@@ -636,7 +623,6 @@
     width: 12px; 
 }
 
-/* For Firefox */
 textarea {
     scrollbar-width: thin; 
     scrollbar-color: #acacac transparent; 
@@ -646,12 +632,10 @@ textarea:hover {
     scrollbar-color: #b1b1b1 transparent; 
 }
 
-/* Placeholder */
 .input-form input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Bouton d'envoi */
 .input-form button {
   display: flex;
   align-items: center; 
@@ -672,7 +656,6 @@ textarea:hover {
   opacity: 0.7;
 }
 
-/* Désactivation du bouton */
 .input-form button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
@@ -682,7 +665,6 @@ h2{
   display: block;
   text-align: center;
 }
-/* ----- Bouton de collapse principal  ----- */
 .collapse-button-main {
   position: absolute;
   top: 20px;
@@ -695,12 +677,10 @@ h2{
   font-size: 24px;    
 }
 
-/* ----- Icônes ----- */
 .material-icons {
   vertical-align: middle;
 }
 
-/* ----- Liste des conversations dans le panel ----- */
 .conversations-list {
   display: flex;
   flex-direction: column;
@@ -731,7 +711,6 @@ h2{
   margin-left: auto;
 
 }
-/* For Firefox */
 .conversations-list {
     scrollbar-width: thin; 
     scrollbar-color: #acacac transparent; 
@@ -758,7 +737,6 @@ h2{
   margin-right: 6px;
 }
 
-/* ----- Footer du panel ----- */
 .sidebar-footer {
   margin-top: auto;
   border-top: 1px solid #525467;
