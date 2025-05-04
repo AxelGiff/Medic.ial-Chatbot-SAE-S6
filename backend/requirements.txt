@@ -1,8 +1,7 @@
 fastapi
 uvicorn[standard]
-torch==2.1.*
 transformers==4.*
-sentence-transformers
+sentence_transformers
 numpy<2.0
 accelerate
 protobuf
@@ -10,9 +9,14 @@ sentencepiece
 requests
 passlib[bcrypt]
 pymongo
-pypDF2
+pyPDF2
 python-multipart
+langchain
 langchain-community
 langchain-text-splitters
 scikit-learn
-dotenv
+python-dotenv
+passlib
+huggingface_hub
+tf-keras
+torch>=2.2.0
