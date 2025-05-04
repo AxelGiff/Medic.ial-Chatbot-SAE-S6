@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Signin from './components/Signin';
 import AdminPanel from './components/AdminPanel';
 function App() {
+  // L'ensemble des états pour controler toutes les pages
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -15,7 +16,7 @@ function App() {
   const [page, setPage] = useState("login"); 
   const [userRole, setUserRole] = useState('');
 
-
+// Store les roles et le nom dans un stockage local
 useEffect(() => {
   const storedUserName = localStorage.getItem('userName');
   const storedUserRole = localStorage.getItem('userRole');
@@ -32,7 +33,8 @@ useEffect(() => {
     console.log("Role chargé depuis localStorage:", storedUserRole);
   }
 }, []);
-  
+
+  // va chercher la route /api/conversations pour récupérer les conversations
   const fetchConversations = async () => {
     try {
       const response = await fetch('http://localhost:8000/api/conversations', {
@@ -59,6 +61,7 @@ useEffect(() => {
   const refreshConversationList = async () => {
     await fetchConversations(); 
   };
+  // Va récupérer les messages d'une conversation
   const loadConversationMessages = async (conversationId) => {
     try {
       const response = await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
@@ -89,6 +92,7 @@ useEffect(() => {
     setIsCollapsed(!isCollapsed);
   };
 
+  // Au clic d'une nouvelle conversation on reset les messages
   const handleNewChat = () => {
     setActiveConversationId(null);
     setMessages([]);
@@ -104,7 +108,7 @@ useEffect(() => {
         time: new Date().toLocaleTimeString('fr-FR', { hour: 'numeric', minute: 'numeric' }),
         message: message
       };
-      
+      // Va POST et la conversation, et les messages de la conversation
       try {
         const response = await fetch('http://localhost:8000/api/conversations', {
           method: 'POST',
@@ -196,7 +200,7 @@ useEffect(() => {
     
     fetchConversations();
   };
-
+  // Hanndle pour se déconnecter
   const handleLogout = async () => {
     try {
       await fetch('http://localhost:8000/api/logout', {
