@@ -15,3 +15,4 @@ python-multipart
 langchain-community
 langchain-text-splitters
 scikit-learn
+dotenv
