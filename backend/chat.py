@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from datetime import datetime
 from bson.objectid import ObjectId
 from huggingface_hub import InferenceClient
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
+import json
 
 from auth import get_current_user
 from database import get_db
@@ -16,15 +17,50 @@ db=get_db()
 conversation_history = {}
 hf_client = InferenceClient(token=HF_TOKEN)
 
+def save_bot_response(conversation_id, current_user, text, current_tokens=0, message_tokens=0):
+    """Fonction utilitaire pour sauvegarder toutes les réponses du bot"""
+    if not conversation_id or not current_user:
+        print("⚠️ Impossible de sauvegarder la réponse - conversation_id ou current_user manquant")
+        return None
+    
+    try:
+        # Sauvegarder le message
+        message_id = db.messages.insert_one({
+            "conversation_id": conversation_id,
+            "user_id": str(current_user["_id"]),
+            "sender": "bot", 
+            "text": text,
+            "timestamp": datetime.utcnow()
+        }).inserted_id
+        
+        # Mettre à jour les métadonnées de la conversation
+        response_tokens = int(len(text.split()) * 1.3) if text else 0
+        total_tokens = current_tokens + message_tokens + response_tokens
+        
+        db.conversations.update_one(
+            {"_id": ObjectId(conversation_id)},
+            {"$set": {
+                "last_message": text[:100] + ("..." if len(text) > 100 else ""),
+                "updated_at": datetime.utcnow(),
+                "token_count": total_tokens
+            }}
+        )
+        
+        print(f"✅ Réponse du bot sauvegardée avec ID: {message_id}")
+        return message_id
+    except Exception as e:
+        print(f"❌ Erreur lors de la sauvegarde: {str(e)}")
+        return None
+
 try:
     from langchain_community.embeddings import HuggingFaceEmbeddings
     embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    print("✅ Modèle d'embedding médical chargé avec succès")
+    print("Modèle d'embedding médical chargé avec succès")
 except Exception as e:
-    print(f"❌ Erreur chargement embedding: {str(e)}")
+    print(f"Erreur chargement embedding: {str(e)}")
     embedding_model = None
 
-# Fonctions de RAG
+# Fonction de RAG (inchangée)
 def retrieve_relevant_context(query, embedding_model, mongo_collection, k=5):
     query_embedding = embedding_model.embed_query(query)
     
@@ -67,18 +103,6 @@ async def chat(request: Request):
     conversation_id = data.get("conversation_id")
     skip_save = data.get("skip_save", False)
 
-
-    if not skip_save and conversation_id and current_user: 
-        db.messages.insert_one({
-            "conversation_id": conversation_id,
-            "user_id": str(current_user["_id"]),
-            "sender": "user",
-            "text": user_message,
-            "timestamp": datetime.utcnow()
-        })
-
-   
-        
     if not user_message:
         raise HTTPException(status_code=400, detail="Le champ 'message' est requis.")
 
@@ -88,6 +112,17 @@ async def chat(request: Request):
     except HTTPException:
         pass
 
+    # Sauvegarde du message utilisateur (si non anonyme)
+    if not skip_save and conversation_id and current_user: 
+        db.messages.insert_one({
+            "conversation_id": conversation_id,
+            "user_id": str(current_user["_id"]),
+            "sender": "user",
+            "text": user_message,
+            "timestamp": datetime.utcnow()
+        })
+
+    # Vérification des limites de tokens
     current_tokens = 0
     message_tokens = 0
     if current_user and conversation_id:
@@ -98,17 +133,21 @@ async def chat(request: Request):
         if conv:
             current_tokens = conv.get("token_count", 0)
         message_tokens = int(len(user_message.split()) * 1.3)
-        MAX_TOKENS = 2000
         if current_tokens + message_tokens > MAX_TOKENS:
+            error_message = "⚠️ **Limite de taille de conversation atteinte**\n\nCette conversation est devenue trop longue. Pour continuer à discuter, veuillez créer une nouvelle conversation."
+            
+            # Sauvegarder ce message d'erreur dans la BD
+            if conversation_id and current_user:
+                save_bot_response(conversation_id, current_user, error_message, current_tokens, message_tokens)
+            
             return JSONResponse({
                 "error": "token_limit_exceeded",
-                "message": "Cette conversation a atteint sa limite de taille. Veuillez en créer une nouvelle.",
+                "message": error_message,
                 "tokens_used": current_tokens,
                 "tokens_limit": MAX_TOKENS
             }, status_code=403)
 
-    
-
+    # Détection des questions sur l'historique
     is_history_question = any(
         phrase in user_message.lower()
         for phrase in [
@@ -122,6 +161,7 @@ async def chat(request: Request):
        or re.search(r"question pr[eé]c[eé]dente", user_message.lower()) \
        or re.search(r"(toutes|liste|quelles|quoi).*questions", user_message.lower())
 
+    # Initialisation de l'historique si nécessaire
     if conversation_id not in conversation_history:
         conversation_history[conversation_id] = []
         if current_user and conversation_id:
@@ -135,116 +175,106 @@ async def chat(request: Request):
                 else:
                     conversation_history[conversation_id].append(f"Réponse : {msg['text']}")
 
+    # Traitement spécial pour les questions sur l'historique
     if is_history_question:
+        # Extraire les questions réelles (non meta)
         actual_questions = []
         
         if conversation_id in conversation_history:
             for msg in conversation_history[conversation_id]:
                 if msg.startswith("Question : "):
                     q_text = msg.replace("Question : ", "")
+                    # Vérifier si ce n'est pas une méta-question
                     is_meta = any(phrase in q_text.lower() for phrase in [
                         "ma première question", "ma précédente question", "ma dernière question",
                         "ce que j'ai demandé", "j'ai dit quoi", "quelles questions",
                         "c'était quoi ma", "quelle était ma", "mes questions"
                     ]) or re.search(r"(?:quelle|quelles|quoi).*?(\d+)[a-z]{2}.*?question", q_text.lower()) \
-                       or re.search(r"derni[eè]re question", q_text.lower()) \
-                       or re.search(r"premi[eè]re question", q_text.lower()) \
-                       or re.search(r"question pr[eé]c[eé]dente", q_text.lower()) \
-                       or re.search(r"(toutes|liste|quelles|quoi).*questions", q_text.lower())
+                    or re.search(r"derni[eè]re question", q_text.lower()) \
+                    or re.search(r"premi[eè]re question", q_text.lower()) \
+                    or re.search(r"question pr[eé]c[eé]dente", q_text.lower()) \
+                    or re.search(r"(toutes|liste|quelles|quoi).*questions", q_text.lower())
                     if not is_meta:
                         actual_questions.append(q_text)
         
+        # Préparer la réponse en fonction du type spécifique de question
+        history_response = ""
+        
         if not actual_questions:
-            return JSONResponse({
-                "response": "Vous n'avez pas encore posé de question dans cette conversation. C'est notre premier échange."
-            })
-            
-        if re.search(r"derni[eè]re question", user_message.lower()):
-            return JSONResponse({
-                "response": f"Votre dernière question était : « {actual_questions[-1]} »"
-            })
-            
-        if re.search(r"question pr[eé]c[eé]dente", user_message.lower()):
-            if len(actual_questions) >= 2:
-                return JSONResponse({
-                    "response": f"Votre question précédente était : « {actual_questions[-2]} »"
-                })
-            else:
-                return JSONResponse({
-                    "response": "Il n'y a pas encore de question précédente dans notre conversation."
-                })
-                
-        if re.search(r"premi[eè]re question", user_message.lower()) or any(p in user_message.lower() for p in ["première question", "1ère question", "1ere question"]):
-            return JSONResponse({
-                "response": f"Votre première question était : « {actual_questions[0]} »"
-            })
-            
-        match_nth = re.search(r"(?:quelle|quelles|quoi).*?(\d+)[a-z]{2}.*?question", user_message.lower())
-        if match_nth:
-            try:
-                question_number = int(match_nth.group(1))
-                if 0 < question_number <= len(actual_questions):
-                    return JSONResponse({
-                        "response": f"Votre {question_number}{'ère' if question_number == 1 else 'ème'} question était : « {actual_questions[question_number-1]} »"
-                    })
-                else:
-                    return JSONResponse({
-                        "response": f"Vous n'avez pas encore posé {question_number} questions dans cette conversation."
-                    })
-            except:
-                pass
-        
-        question_number = None
-        if any(p in user_message.lower() for p in ["deuxième question", "2ème question", "2eme question", "seconde question"]):
-            question_number = 2
+            history_response = "Vous n'avez pas encore posé de question dans cette conversation. C'est notre premier échange."
         else:
-            match = re.search(r'(\d+)[eèiéê]*m*e* question', user_message.lower())
-            if match:
-                try:
-                    question_number = int(match.group(1))
-                except:
-                    pass
-        
-        if question_number is not None:
-            if 0 < question_number <= len(actual_questions):
-                suffix = "ère" if question_number == 1 else "ème"
-                return JSONResponse({
-                    "response": f"Votre {question_number}{suffix} question était : « {actual_questions[question_number-1]} »"
-                })
+            # Rechercher des mots-clés spécifiques pour personnaliser la réponse
+            
+            # Cas 1: Question précédente/dernière question
+            if any(phrase in user_message.lower() for phrase in ["question précédente", "dernière question"]) and len(actual_questions) > 1:
+                # La dernière question est l'avant-dernière du tableau (la dernière étant la question actuelle)
+                prev_question = actual_questions[-1] if actual_questions else "Aucune question précédente trouvée."
+                history_response = f"**Votre question précédente était :**\n\n\"{prev_question}\""
+            
+            # Cas 2: Première question
+            elif any(phrase in user_message.lower() for phrase in ["première question", "1ère question", "1ere question"]):
+                first_question = actual_questions[0] if actual_questions else "Aucune première question trouvée."
+                history_response = f"**Votre première question était :**\n\n\"{first_question}\""
+            
+            # Cas 3: Question numérotée spécifique (2ème, 3ème, etc.)
+            elif re.search(r"(\d+)[èeme]{1,3}", user_message.lower()):
+                match = re.search(r"(\d+)[èeme]{1,3}", user_message.lower())
+                if match:
+                    question_num = int(match.group(1))
+                    if 0 < question_num <= len(actual_questions):
+                        specific_question = actual_questions[question_num-1]
+                        history_response = f"**Votre question n°{question_num} était :**\n\n\"{specific_question}\""
+                    else:
+                        history_response = f"Je ne trouve pas de question n°{question_num} dans notre conversation. Vous n'avez posé que {len(actual_questions)} question(s)."
+            
+            # Cas par défaut: Toutes les questions
             else:
-                return JSONResponse({
-                    "response": f"Vous n'avez pas encore posé {question_number} questions dans cette conversation."
-                })
-        
-        if len(actual_questions) == 1:
-            return JSONResponse({
-                "response": f"Vous avez posé une seule question jusqu'à présent : « {actual_questions[0]} »"
-            })
-        else:
-            question_list = "\n".join([f"{i+1}. {q}" for i, q in enumerate(actual_questions)])
-            return JSONResponse({
-                "response": f"Voici les questions que vous avez posées dans cette conversation :\n\n{question_list}"
-            })
+                history_response = "**Voici les questions que vous avez posées dans cette conversation :**\n\n"
+                for i, question in enumerate(actual_questions, 1):
+                    history_response += f"{i}. {question}\n"
+                    
+                # Ajouter des informations supplémentaires pour les longues listes
+                if len(actual_questions) > 3:
+                    history_response += f"\nVous avez posé {len(actual_questions)} questions dans cette conversation."
 
+        # Ajouter l'historique en mémoire
+        if conversation_id:
+            conversation_history[conversation_id].append(f"Réponse : {history_response}")
+            
+        # IMPORTANT: Sauvegarder la réponse dans la BD
+        if conversation_id and current_user:
+            save_bot_response(conversation_id, current_user, history_response, current_tokens, message_tokens)
+            print(f"✅ Réponse à la question d'historique sauvegardée pour conversation {conversation_id}")
+        
+        return JSONResponse({"response": history_response})
+
+    # Ajout de la question actuelle à l'historique
+    if conversation_id:
+        conversation_history[conversation_id].append(f"Question : {user_message}")
+
+    # Récupération du contexte RAG
     context = None
     if not is_history_question and embedding_model:
         context = retrieve_relevant_context(user_message, embedding_model, db.connaissances, k=5)
         if context and conversation_id:
             conversation_history[conversation_id].append(f"Contexte : {context}")
 
-    if conversation_id:
-        conversation_history[conversation_id].append(f"Question : {user_message}")
-
+    # Préparation du prompt système
     system_prompt = (
-    "Tu es un chatbot spécialisé dans la santé mentale, et plus particulièrement la schizophrénie. "
-    "Tu réponds de façon fiable, claire et empathique, en t'appuyant uniquement sur des sources médicales et en français. "
-    "IMPORTANT: Fais particulièrement attention aux questions de suivi. Si l'utilisateur pose une question qui ne précise "
-    "pas clairement le sujet mais qui fait suite à votre échange précédent, comprends que cette question fait référence "
-    "au contexte de la conversation précédente. Par exemple, si l'utilisateur demande 'Comment les traite-t-on?' après "
-    "avoir parlé des symptômes positifs de la schizophrénie, ta réponse doit porter spécifiquement sur le traitement "
-    "des symptômes positifs, et non sur la schizophrénie en général.IMPORTANT: Vise tes réponses sous forme de Markdown."
-)
+        "Tu es un chatbot spécialisé dans la santé mentale, et plus particulièrement la schizophrénie. "
+        "Tu réponds de façon fiable, claire et empathique, en t'appuyant uniquement sur des sources médicales et en français. "
+        "IMPORTANT: Fais particulièrement attention aux questions de suivi. Si l'utilisateur pose une question qui ne précise "
+        "pas clairement le sujet mais qui fait suite à votre échange précédent, comprends que cette question fait référence "
+        "au contexte de la conversation précédente. Par exemple, si l'utilisateur demande 'Comment les traite-t-on?' après "
+        "avoir parlé des symptômes positifs de la schizophrénie, ta réponse doit porter spécifiquement sur le traitement "
+        "des symptômes positifs, et non sur la schizophrénie en général. IMPORTANT: Vise tes réponses sous forme de Markdown."
+        "IMPÉRATIF: Structure tes réponses en Markdown, utilisant **des gras** pour les points importants, "
+    "des titres avec ## pour les sections principales, des listes à puces avec * pour énumérer des points, "
+    "et > pour les citations importantes. Cela rend ton contenu plus facile à lire et à comprendre."
+    
+    )
 
+    # Enrichir l prompt avec l'historique et le contexte RAG
     enriched_context = ""
 
     if conversation_id in conversation_history:
@@ -291,76 +321,129 @@ async def chat(request: Request):
             "Tu dois donner une réponse complète et bien structurée."
         )
 
+    # Préparation des messages pour le LLM
     messages = [{"role": "system", "content": system_prompt}]
     
     if conversation_id and len(conversation_history.get(conversation_id, [])) > 0:
         history = conversation_history[conversation_id]
-        for i in range(0, min(20, len(history)-1), 2):
-            if i+1 < len(history):
-                if history[i].startswith("Question :"):
-                    user_text = history[i].replace("Question : ", "")
-                    messages.append({"role": "user", "content": user_text})
+        
+        # Assurer l'alternance user/assistant
+        user_messages = []
+        bot_messages = []
+        
+        for i in range(len(history)):
+            if i < len(history) and history[i].startswith("Question :"):
+                user_text = history[i].replace("Question : ", "")
+                user_messages.append(user_text)
                 
-                if history[i+1].startswith("Réponse :"):
-                    assistant_text = history[i+1].replace("Réponse : ", "")
-                    messages.append({"role": "assistant", "content": assistant_text})
+            if i+1 < len(history) and history[i+1].startswith("Réponse :"):
+                bot_text = history[i+1].replace("Réponse : ", "")
+                bot_messages.append(bot_text)
+        
+        # Construire des paires user/assistant
+        valid_pairs = min(len(user_messages), len(bot_messages))
+        
+        for i in range(valid_pairs):
+            messages.append({"role": "user", "content": user_messages[i]})
+            messages.append({"role": "assistant", "content": bot_messages[i]})
     
+    # Ajouter le message actuel
     messages.append({"role": "user", "content": user_message})
 
-    try:
-        completion = hf_client.chat.completions.create(
-            model="mistralai/Mistral-7B-Instruct-v0.3",
-            messages=messages,
-            max_tokens=1024,  
-            temperature=0.7
-        )
-        bot_response = completion.choices[0].message["content"].strip()
-        if bot_response.endswith((".", "!", "?")) == False and len(bot_response) > 500:
-            bot_response += "\n\n(Note: Ma réponse a été limitée par des contraintes de taille. N'hésitez pas à me demander de poursuivre si vous souhaitez plus d'informations.)"
-    except Exception:
+    # Fonction génératrice pour le streaming
+    async def generate_stream():
         try:
-            fallback = hf_client.text_generation(
+            collected_response = ""
+            
+            # Signal de début de stream
+            yield "data: {\"type\": \"start\"}\n\n"
+            
+            # Appel à l'API Hugging Face avec streaming
+            completion_stream = hf_client.chat.completions.create(
                 model="mistralai/Mistral-7B-Instruct-v0.3",
-                prompt=f"<s>[INST] {system_prompt}\n\nQuestion: {user_message} [/INST]",
-                max_new_tokens=512,
-                temperature=0.7
+                messages=messages,
+                max_tokens=1024,
+                temperature=0.7,
+                stream=True
             )
-            bot_response = fallback
-        except Exception:
-            bot_response = "Je suis désolé, je rencontre actuellement des difficultés techniques. Pourriez-vous reformuler votre question ou réessayer dans quelques instants?"
+            chunk_buffer = ""
+            chunk_count = 0
+            MAX_CHUNKS_BEFORE_SEND = 3  # Envoyer tous les 5 chunks reçus
+            # Traiter chaque chunk
+            for chunk in completion_stream:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    content = chunk.choices[0].delta.content
+                    collected_response += content
+                    chunk_buffer += content
+                    chunk_count += 1
+                    
+                    # Envoyer es chunks accumulés périodiquement
+                    if chunk_count >= MAX_CHUNKS_BEFORE_SEND or '\n' in content:
+                        yield f"data: {json.dumps({'content': chunk_buffer})}\n\n"
+                        chunk_buffer = ""
+                        chunk_count = 0
 
-    if conversation_id:
-        conversation_history[conversation_id].append(f"Réponse : {bot_response}")
-        
-        if len(conversation_history[conversation_id]) > 50: 
-            conversation_history[conversation_id] = conversation_history[conversation_id][-50:]
-
-    if not skip_save and conversation_id and current_user: 
-        db.messages.insert_one({
-            "conversation_id": conversation_id,
-            "user_id": str(current_user["_id"]),
-            "sender": "bot", 
-            "text": bot_response,
-            "timestamp": datetime.utcnow()
-        })
-
-    if conversation_id and current_user:
-        db.messages.insert_one({
-            "conversation_id": conversation_id,
-            "user_id": str(current_user["_id"]),
-            "sender": "bot", 
-            "text": bot_response,
-            "timestamp": datetime.utcnow()
-        })
-        response_tokens = int(len(bot_response.split()) * 1.3)
-        total_tokens = current_tokens + message_tokens + response_tokens
-        db.conversations.update_one(
-            {"_id": ObjectId(conversation_id)},
-            {"$set": {
-                "last_message": bot_response,
-                "updated_at": datetime.utcnow(),
-                "token_count": total_tokens
-            }}
-        )
-
-    return {"response": bot_response}
+            # Envoyer le reste du buffer
+            if chunk_buffer:
+                yield f"data: {json.dumps({'content': chunk_buffer})}\n\n"
+            
+            # Ajouter une note si nécessaire
+            if collected_response.endswith((".", "!", "?")) == False and len(collected_response) > 500:
+                suffix = "\n\n(Note: Ma réponse a été limitée par des contraintes de taille. N'hésitez pas à me demander de poursuivre si vous souhaitez plus d'informations.)"
+                collected_response += suffix
+                yield f"data: {json.dumps({'content': suffix})}\n\n"
+            
+            # Sauvegarder la réponse complète dans l'historique en mémoire
+            if conversation_id:
+                conversation_history[conversation_id].append(f"Réponse : {collected_response}")
+                
+                if len(conversation_history[conversation_id]) > 50: 
+                    conversation_history[conversation_id] = conversation_history[conversation_id][-50:]
+            
+            # Sauvegarder la réponse dans la BD (sans condition skip_save)
+            if conversation_id and current_user:
+                save_bot_response(conversation_id, current_user, collected_response, current_tokens, message_tokens)
+            
+            # Signal de fin de stream
+            yield "data: {\"type\": \"end\"}\n\n"
+            
+        except Exception as e:
+            # Gérer les erreurs de streaming
+            error_message = str(e)
+            print(f"❌ Streaming error: {error_message}")
+            
+            try:
+                # Fallback en mode non-streaming
+                fallback = hf_client.text_generation(
+                    model="mistralai/Mistral-7B-Instruct-v0.3",
+                    prompt=f"<s>[INST] {system_prompt}\n\nQuestion: {user_message} [/INST]",
+                    max_new_tokens=512,
+                    temperature=0.7
+                )
+                yield f"data: {json.dumps({'content': fallback})}\n\n"
+                
+                # Sauvegarder la réponse de fallback dans l'historique
+                if conversation_id:
+                    conversation_history[conversation_id].append(f"Réponse : {fallback}")
+                
+                # Sauvegarder la réponse fallback dans la BD
+                if conversation_id and current_user:
+                    save_bot_response(conversation_id, current_user, fallback, current_tokens, message_tokens)
+                    
+            except Exception as fallback_error:
+                print(f"❌ Erreur de fallback: {str(fallback_error)}")
+                error_response = "Je suis désolé, je rencontre actuellement des difficultés techniques. Pourriez-vous reformuler votre question ou réessayer dans quelques instants?"
+                yield f"data: {json.dumps({'content': error_response})}\n\n"
+                
+                # Sauvegarder aussi les messages d'erreur technique
+                if conversation_id and current_user:
+                    save_bot_response(conversation_id, current_user, error_response, current_tokens, message_tokens)
+            
+            # Signal de fin de stream
+            yield "data: {\"type\": \"end\"}\n\n"
+    
+    # Retourner une réponse en streaming
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream"
+    )
