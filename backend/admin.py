@@ -161,6 +161,7 @@ async def list_documents(current_user: dict = Depends(get_admin_user)):
         print(f"Erreur lors de la liste des documents: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
 
+#Fonction pour supprimer un document. Si on supprimer le document principal, on supprime également tous les chunks qui en dépendent.
 @router.delete("/knowledge/{document_id}")
 async def delete_document(document_id: str, current_user: dict = Depends(get_admin_user)):
     try:
@@ -169,26 +170,21 @@ async def delete_document(document_id: str, current_user: dict = Depends(get_adm
         except Exception:
             raise HTTPException(status_code=400, detail="ID de document invalide")
         
-        # Récupérer le document
         document = db.connaissances.find_one({"_id": doc_id})
         if not document:
             raise HTTPException(status_code=404, detail="Document non trouvé")
         
-        # Supprimer les chunks associés si c'est un document parent
         chunks_deleted = 0
         if document.get("is_parent", False):
-            # Supprimer tous les chunks liés à ce parent
             chunks_result = db.connaissances.delete_many({"parent_id": doc_id})
             chunks_deleted = chunks_result.deleted_count
             print(f"Suppression de {chunks_deleted} chunks associés au document {document_id}")
         
-        # Supprimer le document principal
         result = db.connaissances.delete_one({"_id": doc_id})
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=500, detail="Échec de la suppression du document")
         
-        # Supprimer le fichier PDF
         pdf_path = f"files/{document_id}.pdf"
         if os.path.exists(pdf_path):
             try:
