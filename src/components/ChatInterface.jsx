@@ -24,7 +24,7 @@ const ChatInterface = ({
   
   // Pour optimiser les performances du streaming
   const accumulatedText = useRef('');
-  const updateThreshold = 1; 
+  const updateThreshold = 1; // Toutes les 10 ms
   const updateIntervalRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -34,13 +34,12 @@ const ChatInterface = ({
   useEffect(() => {
     scrollToBottom();
     
-    // Nettoyer l'intervalle précédent si existant
     if (updateIntervalRef.current) {
       clearInterval(updateIntervalRef.current);
       updateIntervalRef.current = null;
     }
     
-    // Créer un nouvel intervalle si en streaming
+   
     if (isStreaming && currentStreamId) {
       updateIntervalRef.current = setInterval(() => {
         if (accumulatedText.current.length > 0) {
@@ -53,10 +52,10 @@ const ChatInterface = ({
           });
           accumulatedText.current = '';
         }
-      }, 100); // Mise à jour toutes les 100ms pour plus de fluidité
+      }, 100); 
     }
     
-    // Nettoyage lors du démontage
+    // clear l'intervalle
     return () => {
       if (updateIntervalRef.current) {
         clearInterval(updateIntervalRef.current);
@@ -69,31 +68,27 @@ const ChatInterface = ({
       setIsLoading(true);
       const userMessageId = `user-${Date.now()}`;
 
-      // Ajouter le message de l'utilisateur
+      // On ajoute le message de l'utilisateur
       setMessages(prev => [...prev, { 
         sender: 'user', 
         text: message,
         id: userMessageId
       }]);      
-      // Envoyer le message au backend
+   
       const updatedConversationId = await onMessageSent(message);
       
-      // Créer un ID unique pour le message en streaming
       const streamMessageId = `bot-${Date.now()}`;
     setCurrentStreamId(streamMessageId);
       
-      // Ajouter un message bot vide pour le streaming
       setMessages(prev => {
-        // Vérifier si le message utilisateur existe déjà
         const userMessageExists = prev.some(m => m.id === userMessageId);
         
-        // Si pour une raison quelconque le message utilisateur a disparu, le rajouter
+        // Pour rajouter le premier message de l'utilisateur
         const updatedMessages = userMessageExists ? prev : [
           ...prev, 
           { sender: 'user', text: message, id: userMessageId }
         ];
         
-        // Ajouter le message bot de streaming
         return [...updatedMessages, { 
           sender: 'bot', 
           text: '', 
@@ -104,7 +99,7 @@ const ChatInterface = ({
       setIsLoading(false); // Plus de chargement mais streaming
       setIsStreaming(true); // Commencer le streaming
       
-      // Faire la requête au backend
+      // Faire la requête au backend pour envoyer le prompt et recevoir la réponse
       const response = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -112,14 +107,14 @@ const ChatInterface = ({
         body: JSON.stringify({ 
           message,
           conversation_id: activeConversationId || updatedConversationId,
-          skip_save: false // Le backend gère la sauvegarde
+          skip_save: false 
         }),
       });
       
-      // Gestion des erreurs HTTP
       if (!response.ok) {
         const errorData = await response.json();
-        
+
+        // SI LIMITE DE TOKENS ATTEINTE ON ENVOIE UN MESSAGE + On doit obligatoirement créer une nouvelle conversation
         if (errorData.error === 'token_limit_exceeded') {
           setIsStreaming(false);
           setCurrentStreamId(null);
@@ -136,7 +131,6 @@ const ChatInterface = ({
         throw new Error(`Chat API error ${response.status}`);
       }
       
-      // Traiter la réponse en streaming si disponible
       if (response.headers.get('content-type')?.includes('text/event-stream') && response.body) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -146,7 +140,6 @@ const ChatInterface = ({
           const { done, value } = await reader.read();
           if (done) break;
           
-          // Décoder et traiter les données
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n\n');
           
@@ -156,7 +149,6 @@ const ChatInterface = ({
                 const data = JSON.parse(line.slice(5));
                 
                 if (data.type === 'start') {
-                  console.log("Début du streaming");
                   fullText = '';
                   accumulatedText.current = '';
                 } 
@@ -166,7 +158,6 @@ const ChatInterface = ({
                   setCurrentStreamId(null);
                   setIsLoading(false);
                   
-                  // Mise à jour finale
                   setMessages(prev => 
                     prev.map(msg => 
                       msg.id === streamMessageId 
@@ -175,19 +166,16 @@ const ChatInterface = ({
                     )
                   );
                   
-                  // Rafraîchir la liste des conversations
                   if (typeof refreshConversationList === 'function') {
                     setTimeout(refreshConversationList, 100);
                   }
                   
-                  return; // Sortir de la boucle une fois terminé
+                  return; 
                 }
                 else if (data.content) {
-                  // Ajouter le contenu du chunk
                   fullText += data.content;
                   accumulatedText.current += data.content;
                   
-                  // Mise à jour moins fréquente de l'interface
                   if (accumulatedText.current.length >= updateThreshold || data.content.includes('\n')) {
                     setMessages(prev => {
                       const userMsg = prev.find(m => m.sender === 'user' && m.text === message);
@@ -207,9 +195,8 @@ const ChatInterface = ({
                       }
                     });
                     
-                    accumulatedText.current = ''; // Réinitialiser l'accumulateur
+                    accumulatedText.current = ''; 
                     
-                    // Faire défiler vers le bas
                     requestAnimationFrame(() => {
                       scrollToBottom();
                     });
@@ -221,7 +208,6 @@ const ChatInterface = ({
                   setCurrentStreamId(null);
                   setIsLoading(false);
                   
-                  // Remplacer par un message d'erreur
                   setMessages(prev => 
                     prev.map(msg => 
                       msg.id === streamMessageId 
@@ -238,7 +224,6 @@ const ChatInterface = ({
         }
       } 
       else {
-        // Fallback pour les réponses non-streaming
         console.log("Received non-streaming response.");
         const responseData = await response.json();
         setIsStreaming(false);
@@ -253,7 +238,6 @@ const ChatInterface = ({
           )
         );
         
-        // Rafraîchir la liste des conversations
         if (typeof refreshConversationList === 'function') {
           setTimeout(refreshConversationList, 100);
         }
@@ -265,7 +249,6 @@ const ChatInterface = ({
       setCurrentStreamId(null);
       setIsLoading(false);
       
-      // Afficher l'erreur
       setMessages(prev => {
         const filteredMessages = prev.filter(m => m.id !== currentStreamId);
         return [...filteredMessages, 
@@ -275,6 +258,7 @@ const ChatInterface = ({
     }
   };
 
+  // Créer une nouvelle conversation
   const handleCreateNewConversation = () => {
     onNewChat();
     setTokenLimitReached(false);
@@ -296,12 +280,11 @@ const ChatInterface = ({
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
   };
 
+  // On regarde s'il faut faire du markdown ou pas
   const isMarkdown = (text, sender) => {
-    // Forcer le rendu Markdown pour TOUS les messages du bot
     if (sender === 'bot') {
       return true;
     }
-    // Pour les messages utilisateur, vérifier la présence de syntaxe Markdown
     return /(?:\*\*|__|##|\*|_|`|>|\d+\.\s|\-\s|\[.*\]\(.*\))/.test(text);
   };
   
