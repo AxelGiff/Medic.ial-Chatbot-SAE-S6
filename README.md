@@ -58,7 +58,7 @@ npm start
    ```bash
       python app.py
    ```
-   **EndPoints**
+   **EndPoints (http://localhost:8000/api/docs)**
    ![image](https://github.com/user-attachments/assets/331ec2e0-004b-411c-a42e-e6a68ebf4c24)
 
 
