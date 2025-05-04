@@ -15,6 +15,8 @@ from chat import embedding_model
 router = APIRouter(prefix="/api/admin", tags=["Administration"])
 db=get_db()
 
+# Fonction pour téleverser un document PDF.
+#Découpe le PDF en plusieurs chunks 
 @router.post("/knowledge/upload")
 async def upload_pdf(
     file: UploadFile = File(...),
@@ -49,7 +51,7 @@ async def upload_pdf(
         print(f"Découpage du document '{title or file.filename}' en chunks...")
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         
-        # Créer un Document Langchain pour le splitting
+        # Document Langchain pour le splitting
         doc = Document(page_content=text_content, metadata={"title": title or file.filename})
         chunks = splitter.split_documents([doc])
         print(f"{len(chunks)} morceaux extraits.")
@@ -75,7 +77,6 @@ async def upload_pdf(
         for i, chunk in enumerate(chunks):
             try:
                 chunk_text = chunk.page_content
-                # Limiter la taille des chunks si nécessaire
                 if len(chunk_text) > 5000:  
                     chunk_text = chunk_text[:5000]
                 
