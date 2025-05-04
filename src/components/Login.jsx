@@ -6,7 +6,8 @@ const Login = ({toSignin, onLoginSuccess}) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    
+
+    // Va POST les identifiants qu'on a envoyé dans le backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -26,7 +27,7 @@ const Login = ({toSignin, onLoginSuccess}) => {
             });
             
             const data = await response.json();
-            
+            // S'il y a eu une réponse, on stocke l'id, le nom et le role dans le local storage
             if (response.ok) {
                 localStorage.setItem('userName', data.username);
                 localStorage.setItem('userId', data.user_id);
