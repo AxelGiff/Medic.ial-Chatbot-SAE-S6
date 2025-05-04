@@ -50,6 +50,7 @@ npm start
 2. Démarrez le serveur :
    ```bash
    cd backend
+   pip install -r requirements.txt
    python app.py
    ```
    
