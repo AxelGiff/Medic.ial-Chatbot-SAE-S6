@@ -8,11 +8,13 @@ function Signin({toLogin}) {
         email: '',
         password: '', 
     });
-    
+
+    // Va enregistrer dans formData les identifiants
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
     
+    // Va POST les identifiants pour se créer un compte
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
