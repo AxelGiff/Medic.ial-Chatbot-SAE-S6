@@ -7,7 +7,7 @@ from database import get_db
 
 router = APIRouter(prefix="/api", tags=["Conversations"])
 db = get_db()
-
+#Fonction qui retourne la dernière conversation
 @router.get("/conversations")
 async def get_conversations(current_user: dict = Depends(get_current_user)):
     try:
@@ -24,6 +24,8 @@ async def get_conversations(current_user: dict = Depends(get_current_user)):
         return {"conversations": conversations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+#Fonction qui créer une conversation quand on l'appel 
 
 @router.post("/conversations")
 async def create_conversation(request: Request, current_user: dict = Depends(get_current_user)):
@@ -45,6 +47,8 @@ async def create_conversation(request: Request, current_user: dict = Depends(get
         return {"conversation_id": str(result.inserted_id)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+#Fonction qui créer les messagees d'une conversation
 
 @router.post("/conversations/{conversation_id}/messages")
 async def add_message(conversation_id: str, request: Request, current_user: dict = Depends(get_current_user)):
@@ -81,6 +85,8 @@ async def add_message(conversation_id: str, request: Request, current_user: dict
     except Exception as e:
         print(f"Erreur lors de l'ajout d'un message: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+#Fonction qui récupère les messages de la conversation cliquée
 @router.get("/conversations/{conversation_id}/messages")
 async def get_messages(conversation_id: str, current_user: dict = Depends(get_current_user)):
     try:
@@ -121,6 +127,8 @@ async def get_messages(conversation_id: str, current_user: dict = Depends(get_cu
         return {"messages": deduplicated_messages}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {str(e)}")
+
+#Fonction qui supprime une conversation donnée
 
 @router.delete("/conversations/{conversation_id}")
 async def delete_conversation(conversation_id: str, current_user: dict = Depends(get_current_user)):
