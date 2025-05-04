@@ -51,12 +51,12 @@ npm start
    ```bash
    cd backend
    pip install -r requirements.txt
-   python app.py
+   uvicorn app:app --reload --port 8000
    ```
    
    Si cette commande ne fonctionne pas, utilisez :
    ```bash
-   uvicorn app:app --reload --port 8000
+      python app.py
    ```
    **EndPoints**
    ![image](https://github.com/user-attachments/assets/331ec2e0-004b-411c-a42e-e6a68ebf4c24)
