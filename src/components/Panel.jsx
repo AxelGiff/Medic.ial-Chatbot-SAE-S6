@@ -16,11 +16,11 @@ const Panel = ({
 }) => {
 
 
-  
+  // créer un nouveau chat
   const createNewChat = () => {
     onNewChat(); 
   };
-
+// Va chercher la route /api/conversation/id_conversation poour delete une conversation
   const deleteConversation = async (conversationId) => {
     try {
       const response = await fetch(`http://localhost:8000/api/conversations/${conversationId}`, {
