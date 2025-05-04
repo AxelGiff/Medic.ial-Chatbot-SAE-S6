@@ -309,11 +309,10 @@ async def chat(request: Request):
 
     try:
         completion = hf_client.chat.completions.create(
-            model="mistralai/Mistral-Small-24B-Instruct-2501", 
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=messages,
             max_tokens=1024,  
-            temperature=0.7, 
-            timeout=15,  
+            temperature=0.7
         )
         bot_response = completion.choices[0].message["content"].strip()
         if bot_response.endswith((".", "!", "?")) == False and len(bot_response) > 500:
